@@ -160,7 +160,8 @@ async def handle_cross_flow(phone: str, btn: str, text: str, session):
         session_store.update(phone, stage="human_requested", human_mode=True)
         return
 # Instead of calling ai_svc, we send a helpful default message
-reply = (
+    
+    reply = (
     "🙏 *Thank you for reaching out!*\n\n"
     "Our AI assistant is currently undergoing maintenance. "
     "Please use the menu by typing *'Hi'* to see our services, "
@@ -168,11 +169,11 @@ reply = (
 )
 
 # We still record the message in history so the architect can read it later
-session.add_history("user", text)
-session.add_history("assistant", reply)
+    session.add_history("user", text)
+    session.add_history("assistant", reply)
 
 # Send the static text back to the user
-await wa.send_text(phone, reply)
+    await wa.send_text(phone, reply)
 
 # ── ADMIN COMMANDS ─────────────────────────────────────────────────────────
 async def handle_admin_command(phone: str, text: str):
