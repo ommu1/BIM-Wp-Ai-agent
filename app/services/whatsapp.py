@@ -42,6 +42,7 @@ async def send_text(to: str, text: str) -> dict:
     })
 
 
+# ── 2. Quick-Reply Buttons (max 3) ─────────────────────────────────────────────────────────────────────────────────────
 # ── 2. Quick-Reply Buttons (max 3) ────────────────────────────────────────────
 async def send_buttons(
     to: str,
@@ -55,11 +56,21 @@ async def send_buttons(
         "body": {"text": body_text},
         "action": {
             "buttons": [
-                {"type": "reply", "reply": {"id": b["id"], "text": b["label"][:20]}}
+                # FIX: Using "title" instead of "text" for Meta Cloud API v20.0
+                {"type": "reply", "reply": {"id": b["id"], "title": b["label"][:20]}}
                 for b in buttons[:3]
             ]
         }
     }
+    
+    # Add optional components if they exist
+    if header_text:
+        interactive["header"] = {"type": "text", "text": header_text}
+    if footer_text:
+        interactive["footer"] = {"text": footer_text}
+
+    return await _send({"to": to, "type": "interactive", "interactive": interactive})
+    
     if header_text:
         interactive["header"] = {"type": "text", "text": header_text}
     if footer_text:
