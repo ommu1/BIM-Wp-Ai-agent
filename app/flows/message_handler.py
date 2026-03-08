@@ -1,0 +1,221 @@
+# app/flows/message_handler.py
+# Central router — every incoming WhatsApp message passes through here
+
+from app.services import whatsapp as wa
+from app.services import ai as ai_svc
+from app.config import messages as M
+from app.config.settings import get_settings
+from app.utils.session_store import session_store
+from app.utils.logger import logger
+
+from app.flows.welcome_flow  import handle_welcome, route_from_main_menu
+from app.flows.training_flow import (
+    start_training_flow, handle_course_selection,
+    handle_details_collection, handle_post_details,
+    start_enrollment, handle_utr_submission, send_brochure,
+)
+from app.flows.projects_flow import (
+    start_projects_flow, handle_project_selection,
+    handle_project_details, handle_post_project,
+)
+from app.flows.student_flow import (
+    start_student_flow, handle_student_id_input,
+    handle_student_menu, handle_claim_certificate,
+    handle_student_freetext,
+)
+
+
+async def handle_incoming_message(
+    phone: str,
+    msg_type: str,
+    text: str | None,
+    button_id: str | None,
+    list_id: str | None,
+    media_id: str | None,
+):
+    logger.info(f"MSG | phone={phone} type={msg_type} text={str(text)[:60]} btn={button_id} list={list_id}")
+
+    s   = get_settings()
+    session = session_store.get_or_create(phone)
+
+    # ── ADMIN COMMANDS from your phone ────────────────────────────────────────
+    if phone == s.admin_phone and text and text.startswith("ADMIN:"):
+        return await handle_admin_command(phone, text)
+
+    # ── HUMAN MODE: bot is paused for this contact ─────────────────────────
+    if session.human_mode:
+        logger.info(f"Human mode active — silent | phone={phone}")
+        return
+
+    lower = (text or "").lower().strip()
+
+    # ── GLOBAL KEYWORDS ────────────────────────────────────────────────────
+    if lower in ("hi", "hello", "start", "menu", "") or session.stage == "start":
+        return await handle_welcome(phone)
+
+    if lower in ("restart", "reset", "main menu", "back to menu"):
+        session_store.reset(phone)
+        return await handle_welcome(phone)
+
+    if lower == "install":
+        return await wa.send_text(phone, M.INSTALL_GUIDE)
+
+    if lower in ("help", "support", "?"):
+        return await wa.send_text(phone,
+            f"🆘 *Need help?*\n\n"
+            f"📞 *+91 72178 22883*\n"
+            f"📧 *askus@bimtrainingandprojects.com*\n"
+            f"🌐 *{s.website_url}*\n\n"
+            "_Type *MENU* to go back to the main menu._"
+        )
+
+    # ── STAGE ROUTER ───────────────────────────────────────────────────────
+    stage = session.stage
+
+    if stage == "main_menu":
+        return await route_from_main_menu(phone, button_id or list_id or "", text or "")
+
+    # Training
+    if stage == "training_menu":
+        return await handle_course_selection(phone, list_id or button_id or "", text or "")
+    if stage == "collecting_details":
+        return await handle_details_collection(phone, text or "")
+    if stage == "post_details":
+        return await handle_post_details(phone, button_id or "", text or "")
+    if stage == "enrollment_qr":
+        return await start_enrollment(phone)
+    if stage == "awaiting_utr":
+        return await handle_utr_submission(phone, text or "")
+    if stage == "payment_submitted":
+        return await wa.send_text(phone,
+            "⏳ *Payment verification in progress.*\n\n"
+            "You'll receive your Student ID once confirmed.\n\n"
+            "Questions? Call *+91 72178 22883* 🙏"
+        )
+
+    # Projects
+    if stage == "projects_menu":
+        return await handle_project_selection(phone, button_id or list_id or "", text or "")
+    if stage == "collecting_project_details":
+        return await handle_project_details(phone, text or "")
+    if stage == "post_project_details":
+        return await handle_post_project(phone, button_id or "", text or "")
+
+    # Student Portal
+    if stage == "awaiting_student_id":
+        return await handle_student_id_input(phone, text or "")
+    if stage == "student_portal":
+        return await handle_student_menu(phone, list_id or button_id or "", text or "")
+    if stage == "student_freetext":
+        return await handle_student_freetext(phone, text or "")
+
+    # Human requested
+    if stage == "human_requested":
+        return await wa.send_text(phone,
+            "_Our team has been notified and will reach out soon._ 🙏\n\nUrgent: *+91 72178 22883*"
+        )
+
+    # ── CROSS-FLOW BUTTON IDs ──────────────────────────────────────────────
+    return await handle_cross_flow(phone, button_id or list_id or "", text or "", session)
+
+
+async def handle_cross_flow(phone: str, btn: str, text: str, session):
+    lower = text.lower()
+
+    btn_map = {
+        "enroll_now":       lambda: start_enrollment(phone),
+        "brochure":         lambda: send_brochure(phone),
+        "back_main":        lambda: handle_welcome(phone),
+        "claim_cert":       lambda: handle_claim_certificate(phone),
+        "try_again":        lambda: start_student_flow(phone),
+        "review_google":    lambda: wa.send_text(phone, "⭐ *Leave a Google Review:*\nhttps://g.page/r/YOUR_LINK\n\nThank you! 🙏"),
+        "review_linkedin":  lambda: wa.send_text(phone, "💼 *Connect on LinkedIn:*\nhttps://linkedin.com/company/bim-training-and-projects\n\nThank you! 🙏"),
+        "review_skip":      lambda: wa.send_text(phone, "No problem! Feel free to reach out anytime. 🙏"),
+        "paid_utr":         lambda: handle_utr_submission(phone, text),
+        "contact_us":       lambda: wa.send_text(phone, f"📞 *Contact Us*\n\n+91 72178 22883\naskus@bimtrainingandprojects.com"),
+        "ask_human":        None,  # handled below
+    }
+
+    if btn in btn_map and btn_map[btn]:
+        return await btn_map[btn]()
+
+    if btn == "ask_human" or any(w in lower for w in ["human", "trainer", "call", "speak"]):
+        await wa.send_text(phone, M.human_handoff())
+        session_store.update(phone, stage="human_requested", human_mode=True)
+        return
+
+    if any(w in lower for w in ["enroll", "enrol"]):
+        return await start_enrollment(phone)
+    if "brochure" in lower:
+        return await send_brochure(phone)
+
+    # AI intent classification
+    intent = await ai_svc.classify_intent(text)
+    if intent == "training":   return await start_training_flow(phone)
+    if intent == "projects":   return await start_projects_flow(phone)
+    if intent == "student":    return await start_student_flow(phone)
+    if intent == "greeting":   return await handle_welcome(phone)
+    if intent == "human":
+        await wa.send_text(phone, M.human_handoff())
+        session_store.update(phone, stage="human_requested", human_mode=True)
+        return
+# Instead of calling ai_svc, we send a helpful default message
+reply = (
+    "🙏 *Thank you for reaching out!*\n\n"
+    "Our AI assistant is currently undergoing maintenance. "
+    "Please use the menu by typing *'Hi'* to see our services, "
+    "or wait for a team member to assist you manually."
+)
+
+# We still record the message in history so the architect can read it later
+session.add_history("user", text)
+session.add_history("assistant", reply)
+
+# Send the static text back to the user
+await wa.send_text(phone, reply)
+
+# ── ADMIN COMMANDS ─────────────────────────────────────────────────────────
+async def handle_admin_command(phone: str, text: str):
+    import re
+    cmd = text.replace("ADMIN:", "").strip()
+    logger.info(f"Admin command | cmd={cmd}")
+
+    pause_match = re.match(r"PAUSE\s+(\+?\d+)", cmd, re.IGNORECASE)
+    resume_match = re.match(r"RESUME\s+(\+?\d+)", cmd, re.IGNORECASE)
+
+    if pause_match:
+        target = pause_match.group(1).replace("+", "")
+        session_store.update(target, human_mode=True)
+        await wa.send_text(phone, f"✅ Bot paused for {target}")
+
+    elif resume_match:
+        target = resume_match.group(1).replace("+", "")
+        session_store.update(target, human_mode=False)
+        await wa.send_text(phone, f"✅ Bot resumed for {target}")
+
+    elif cmd.upper() == "STATUS":
+        count = session_store.count()
+        from datetime import datetime
+        await wa.send_text(phone,
+            f"📊 *Bot Status*\nActive sessions: {count}\nServer: Running ✅\n"
+            f"Time: {datetime.now().strftime('%d-%m-%Y %H:%M:%S IST')}"
+        )
+
+    elif cmd.upper() == "SESSIONS":
+        all_s = session_store.all_active()
+        lines = [f"{s['phone']}: {s['stage']} ({s['flow']})" for s in all_s[:10]]
+        await wa.send_text(phone, "📋 *Active Sessions:*\n" + ("\n".join(lines) or "None"))
+
+    elif cmd.upper().startswith("CLEANUP"):
+        removed = session_store.cleanup_expired()
+        await wa.send_text(phone, f"🧹 Cleaned {removed} expired sessions")
+
+    else:
+        await wa.send_text(phone,
+            "❓ Admin commands:\n"
+            "• ADMIN: STATUS\n"
+            "• ADMIN: SESSIONS\n"
+            "• ADMIN: CLEANUP\n"
+            "• ADMIN: PAUSE +91XXXXXXXXXX\n"
+            "• ADMIN: RESUME +91XXXXXXXXXX"
+        )
