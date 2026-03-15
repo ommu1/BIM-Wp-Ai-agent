@@ -69,6 +69,34 @@ async def handle_incoming_message(
             "_Type *MENU* to go back to the main menu._"
         )
 
+    if lower in (
+        "human", "agent", "call me", "talk to someone",
+        "i want to talk to someone", "need help",
+        "contact", "speak to someone", "talk to human"
+    ):
+        user_name   = session.data.get("name", "Not collected yet")
+        user_course = session.data.get("course_interest", "Not specified")
+        await wa.send_text(
+            phone,
+            "✅ *Noted! Our team has been notified.*\n\n"
+            "Someone from BIM Training & Projects will contact you "
+            "on this number personally.\n\n"
+            
+        )
+        await wa.send_text(
+            s.admin_phone,
+            f"🔔 *HELP REQUESTED*\n"
+            f"━━━━━━━━━━━━━━━━\n"
+            f"👤 Name: {user_name}\n"
+            f"📱 Number: +{phone}\n"
+            f"💬 Said: \"{text}\"\n"
+            f"🎓 Course: {user_course}\n"
+            f"━━━━━━━━━━━━━━━━\n"
+            f"If busy, reply: *ADMIN: BUSY +{phone}*"
+        )
+        session_store.update(phone, stage="human_requested")
+        return
+
     # ── STAGE ROUTER ───────────────────────────────────────────────────────
     stage = session.stage
 
@@ -161,19 +189,16 @@ async def handle_cross_flow(phone: str, btn: str, text: str, session):
         return
 # Instead of calling ai_svc, we send a helpful default message
     
-    reply = (
-    "🙏 *Thank you for reaching out!*\n\n"
-    "Our AI assistant is currently undergoing maintenance. "
-    "Please use the menu by typing *'Hi'* to see our services, "
-    "or wait for a team member to assist you manually."
-)
-
-# We still record the message in history so the architect can read it later
-    session.add_history("user", text)
-    session.add_history("assistant", reply)
-
-# Send the static text back to the user
-    await wa.send_text(phone, reply)
+    await wa.send_text(
+        phone,
+        "🙏 *Not sure what you mean!*\n\n"
+        "Please type one of these to get started:\n\n"
+        "• *Hi* — Main menu\n"
+        "• *BIM* — Course information\n"
+        "• *Projects* — Project enquiries\n"
+        "• *Student* — Existing student portal\n"
+        "• *Help* — Talk to our team"
+    )
 
 # ── ADMIN COMMANDS ─────────────────────────────────────────────────────────
 async def handle_admin_command(phone: str, text: str):
