@@ -23,15 +23,15 @@ async def _send(to: str, subject: str, html_body: str):
     s = get_settings()
     msg = _build_envelope(to, subject, html_body)
     try:
-        await aiosmtplib.send(
-            msg,
-            hostname="smtp.gmail.com",
-            port=465,
-            use_tls=True,
-            username=s.gmail_user,
-            password=s.gmail_app_password,
-        )
-        logger.info(f"Email sent | to={to} subject={subject[:40]}")
+       await aiosmtplib.send(
+    msg,
+    hostname="smtp.gmail.com",
+    port=587,
+    start_tls=True,
+    username=s.gmail_user,
+    password=s.gmail_app_password,)
+
+       logger.info(f"Email sent | to={to} subject={subject[:40]}")
     except Exception as e:
         logger.error(f"Email failed | to={to} | {e}")
 
@@ -93,7 +93,7 @@ async def send_certificate_email(
 async def test_smtp() -> bool:
     s = get_settings()
     try:
-        async with aiosmtplib.SMTP(hostname="smtp.gmail.com", port=465, use_tls=True) as smtp:
+        async with aiosmtplib.SMTP(hostname="smtp.gmail.com", port=587, start_tls=True) as smtp:
             await smtp.login(s.gmail_user, s.gmail_app_password)
         logger.info("Gmail SMTP connection verified ✅")
         return True
