@@ -11,7 +11,6 @@ async def handle_welcome(phone: str):
         phone,
         M.GREETING,
         M.GREETING_BUTTONS,
-        header_text="BIM Training & Projects",
         footer_text="bimtrainingandprojects.com",
     )
     session_store.update(phone, stage="main_menu")
