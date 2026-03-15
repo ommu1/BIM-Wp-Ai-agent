@@ -241,7 +241,7 @@ async def broadcast_seats(data: BroadcastRequest):
 
 
 # ── Health check ──────────────────────────────────────────────────────────────
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 async def health():
     from app.utils.session_store import session_store
     return {
