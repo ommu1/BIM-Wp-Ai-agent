@@ -4,7 +4,7 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     # Meta / WhatsApp
-    whatsapp_token: str = ""
+    whatsapp_token: str = "EAAbDQ0ocWM0BQxAi4f8rgVitDypOzP98jFFaONyt0tp4bxurKB0ZACjsWPgM1jZCG3Q4TYxDfRNrRGslokFTmQyISnv747R6KZBGf0B74W9Tuz5qTsT7XM9f1Ieagj6VfLFPfVpEtFamWKqCKGdfUyok4VjcOAYYKqaxmjZCmyVcKZCZAijTxCtRjcYnROdAZDZD"
     phone_number_id: str = "1039490259245462"
     # ADD THIS LINE TO FIX THE ERROR
     whatsapp_business_account_id: str = "891235163757950" 
@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     upi_id: str = "bimtraining@upi"
     upi_name: str = "BIM Training and Projects"
     port: int = 8000
+
+    #pdf
+    brochure_pdf_url: str = "https://drive.google.com/file/d/1Hb4dTouT5b8wVlZH_IhBpjPW9Py8Vg_f/view?usp=sharing"
 
     class Config:
         env_file = ".env"
