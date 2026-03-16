@@ -34,7 +34,7 @@ TRAINING_MENU_SECTIONS = [
     {
         "title": "BIM Courses",
         "rows": [
-            {"id": "arch_bim",  "title": "🏛️ Arch, Structure & Int. Design",  "description": "Revit · Navisworks · ACC · DYANMO"},
+            {"id": "arch_bim",  "title": "🏛️ Arch, Structure & ID",  "description": "Revit · Navisworks · ACC · DYANMO"},
             {"id": "mepf_bim",  "title": "⚙️ MEPF BIM Training",              "description": "Revit MEP · Navisworks · ACC "},
             {"id": "workshop",  "title": "⚡ BIM Workshop",             "description": "Upcoming batch — register now"},
             {"id": "back_main", "title": "↩ Back to Main Menu",               "description": ""},
