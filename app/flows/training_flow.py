@@ -64,6 +64,16 @@ async def handle_course_selection(phone: str, list_id: str, text: str):
 async def handle_details_collection(phone: str, text: str):
     session = session_store.get_or_create(phone)
 
+    # Handle button taps first before extracting details
+    lower_text = (text or "").lower()
+    if text == "Download Brochure" or "brochure" in lower_text:
+        return await send_brochure(phone)
+    if text == "Enroll Now" or "enroll" in lower_text:
+        return await start_enrollment(phone)
+    if text == "Back to Menu" or "back" in lower_text:
+        from app.flows.welcome_flow import handle_welcome
+        session_store.reset(phone)
+        return await handle_welcome(phone)
     # Extract structured data with AI
     extracted = await ai_svc.extract_contact_details(text)
     new_data = dict(session.data)
