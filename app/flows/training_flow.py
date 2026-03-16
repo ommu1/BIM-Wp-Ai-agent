@@ -35,7 +35,7 @@ async def handle_course_selection(phone: str, list_id: str, text: str):
                 {"id": "back_main",  "label": "Back to Menu"},
             ]
         )
-        session_store.update(phone, stage="collecting_details", sub_flow="arch_bim")
+        session_store.update(phone, stage="post_details", sub_flow="arch_bim")
 
     elif list_id == "mepf_bim" or any(w in lower for w in ["mepf", "mep", "mechanical", "electrical", "plumbing"]):
         await wa.send_text(phone, M.COURSE_MEPF)
