@@ -190,15 +190,16 @@ async def handle_cross_flow(phone: str, btn: str, text: str, session):
         return await send_brochure(phone)
 
     # AI intent classification
-    intent = await ai_svc.classify_intent(text)
-    if intent == "training":   return await start_training_flow(phone)
-    if intent == "projects":   return await start_projects_flow(phone)
-    if intent == "student":    return await start_student_flow(phone)
-    if intent == "greeting":   return await handle_welcome(phone)
-    if intent == "human":
-        await wa.send_text(phone, M.human_handoff())
-        session_store.update(phone, stage="human_requested", human_mode=True)
-        return
+    lower = text.lower()
+    if any(w in lower for w in ["train", "course", "bim", "revit", "mepf", "learn"]):
+        return await start_training_flow(phone)
+    if any(w in lower for w in ["project", "architecture", "interior", "design"]):
+        return await start_projects_flow(phone)
+    if any(w in lower for w in ["student", "existing", "portal", "my id"]):
+        return await start_student_flow(phone)
+    if any(w in lower for w in ["hi", "hello", "hey", "start"]):
+        return await handle_welcome(phone)
+       
 # Instead of calling ai_svc, we send a helpful default message
     
     await wa.send_text(

@@ -74,14 +74,24 @@ async def handle_details_collection(phone: str, text: str):
         from app.flows.welcome_flow import handle_welcome
         session_store.reset(phone)
         return await handle_welcome(phone)
-    # Extract structured data with AI
-    extracted = await ai_svc.extract_contact_details(text)
+
+    
+    import re
     new_data = dict(session.data)
 
-    for field in ["name", "email", "city", "country", "profession", "experience", "college"]:
-        if extracted.get(field):
-            new_data[field] = extracted[field]
+    # Extract email with regex
+    email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', text)
+    if email_match:
+        new_data["email"] = email_match.group(0)
 
+    # Extract name — first line or first two words
+    lines = text.strip().split("\n")
+    first_line = lines[0].strip()
+    if not new_data.get("name") and len(first_line.split()) <= 4:
+        new_data["name"] = first_line
+
+    # Store full text as description
+    new_data["description"] = text
     session_store.update(phone, data=new_data)
 
     has_name  = bool(new_data.get("name"))
@@ -137,12 +147,13 @@ async def handle_post_details(phone: str, button_id: str, text: str):
         )
         return
 
-    # AI fallback
-    reply = await ai_svc.get_ai_reply(session.history, text)
-    session.add_history("user", text)
-    session.add_history("assistant", reply)
-    await wa.send_text(phone, reply)
-
+    await wa.send_text(
+        phone,
+        "Thank you for your message! 🙏\n\n"
+        "Our team will get back to you within *2-4 hours*.\n\n"
+        "📞 *+91 72178 22883*\n"
+        "📧 *askus@bimtrainingandprojects.com*"
+    )
 
 # ── ENROLLMENT: Show fee + send QR ───────────────────────────────────────────
 async def start_enrollment(phone: str):
