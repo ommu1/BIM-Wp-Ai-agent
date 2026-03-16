@@ -65,14 +65,14 @@ https://bimsavvyacademy.com/courses
 
 *Please share your Name, Adress , Phone number , Email , Profession , Company/College & Years of Experience to get fee details.*"""
 
-COURSE_WORKSHOP = """⚡ *BIM Workshops — Upcoming (Free to Join!)*
+COURSE_WORKSHOP = """⚡ *BIM Workshops — Upcoming !*
 
 📅 Intensive, focused sessions on specific BIM topics
-💰 *Fee:* FREE
-🔗 *Mode:* Online via Zoom
+💰 *Fee:* 
+🔗 *Mode:* Online 
 
 *To register, please share:*
-📝 *Name, Email, Phone, Company/College*"""
+📝 *Name, Email, Phone, Profession , Company/College , Address *"""
 
 def confirm_details_received(name: str) -> str:
     return f"""✅ Thank you, *{name}!*
