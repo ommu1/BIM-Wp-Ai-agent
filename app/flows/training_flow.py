@@ -79,20 +79,28 @@ async def handle_details_collection(phone: str, text: str):
     import re
     new_data = dict(session.data)
 
-    # Extract email with regex
+    # Extract email
     email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', text)
     if email_match:
         new_data["email"] = email_match.group(0)
+        text_no_email = text.replace(email_match.group(0), "")
+    else:
+        text_no_email = text
 
-    # Extract name — first line or first two words
-    lines = text.strip().split("\n")
-    first_line = lines[0].strip()
-    if not new_data.get("name") and len(first_line.split()) <= 4:
-        new_data["name"] = first_line
+    # Split by comma or newline to get other fields
+    parts = [p.strip() for p in re.split(r'[,\n]', text_no_email) if p.strip()]
 
-    # Store full text as description
+    if parts and not new_data.get("name"):
+        new_data["name"] = parts[0]
+    if len(parts) > 1 and not new_data.get("city"):
+        new_data["city"] = parts[1]
+    if len(parts) > 2 and not new_data.get("profession"):
+        new_data["profession"] = parts[2]
+    if len(parts) > 3 and not new_data.get("experience"):
+        new_data["experience"] = parts[3]
+
+    # Save full text as backup
     new_data["description"] = text
-    session_store.update(phone, data=new_data)
 
     has_name  = bool(new_data.get("name"))
     has_email = bool(new_data.get("email"))
