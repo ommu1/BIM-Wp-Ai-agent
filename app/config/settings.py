@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     port: int = 8000
 
     #pdf
-    brochure_pdf_url: str = "https://drive.google.com/file/d/1Hb4dTouT5b8wVlZH_IhBpjPW9Py8Vg_f/view?usp=sharing"
+    brochure_pdf_url: str = "https://www.bimtrainingandprojects.com/_files/ugd/215925_04d6bd8602ba42b6891b92b553915502.pdf"
 
     class Config:
         env_file = ".env"
