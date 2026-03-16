@@ -209,13 +209,20 @@ async def handle_utr_submission(phone: str, text: str):
 
 # ── Send Brochure ─────────────────────────────────────────────────────────────
 async def send_brochure(phone: str):
-    config = await asyncio.to_thread(sheets.get_admin_config)
-    url    = config.get("brochure_url", "https://www.bimtrainingandprojects.com/bimtraining")
+    from app.config.settings import get_settings
+    s = get_settings()
+    pdf_url = s.brochure_pdf_url
 
-    if url.endswith(".pdf"):
-        await wa.send_document(phone, url, "BIM_Training_Brochure.pdf",
-            "📄 BIM Training & Projects — Course Brochure\n\nReply *ENROLL* to register!")
+    if pdf_url:
+        await wa.send_document(
+            phone,
+            pdf_url,
+            "BIM_Training_Brochure.pdf",
+            "BIM Training & Projects — Course Brochure\n\nReply ENROLL to register!"
+        )
     else:
-        await wa.send_text(phone, f"📄 *Course Brochure*\n\n{url}\n\n_Reply *ENROLL* to start enrollment_")
+        config = await asyncio.to_thread(sheets.get_admin_config)
+        url = config.get("brochure_url", "https://www.bimtrainingandprojects.com/bimtraining")
+        await wa.send_text(phone, f"Course Brochure:\n\n{url}\n\nReply ENROLL to start enrollment")
 
     session_store.update(phone, stage="post_brochure")
