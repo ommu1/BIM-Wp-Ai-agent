@@ -8,12 +8,16 @@ def cfg():
     return get_settings()
 
 # ── WELCOME ──────────────────────────────────────────────────────────────────
-GREETING = """👋 *Namaste! Welcome to BIM Training & Projects!* 🏗️
+GREETING = """ *Namaste! Welcome to BIM Training & Projects!* 
 
 We specialize in:
-🎓 BIM Training (Architecture, MEPF)
-🏛️ Architecture & Interior Design Projects
-📐 BIM Consultancy & Coordination
+- BIM Training 
+- Projects
+- Others 
+
+Please visit our website for more information:
+www.bimtrainingandprojects.com
+
 
 *How can I help you today?*"""
 
@@ -30,10 +34,9 @@ TRAINING_MENU_SECTIONS = [
     {
         "title": "BIM Courses",
         "rows": [
-            {"id": "arch_bim",  "title": "🏛️ Architecture, Structure & ID",  "description": "Revit · Navisworks · BIM 360 · AutoCAD"},
+            {"id": "arch_bim",  "title": "🏛️ Architecture & Structure",  "description": "Revit · Navisworks · BIM 360 · AutoCAD"},
             {"id": "mepf_bim",  "title": "⚙️ MEPF BIM Training",              "description": "MEP Coordination · Clash Detection · Revit MEP"},
-            {"id": "workshop",  "title": "⚡ BIM Workshop (Free)",             "description": "Upcoming batch — enroll for free"},
-            {"id": "brochure",  "title": "📄 Download Course Brochure",        "description": "Get PDF with full syllabus & fees"},
+            {"id": "workshop",  "title": "⚡ BIM Workshop",             "description": "Upcoming batch — register now"},
             {"id": "back_main", "title": "↩ Back to Main Menu",               "description": ""},
         ]
     }
