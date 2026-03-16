@@ -63,7 +63,7 @@ COURSE_MEPF = """⚙️ *MEPF BIM Training*
 For BIM MEP Trainings (For MEP Engineers) visit our MEP Training Partner Website :
 https://bimsavvyacademy.com/courses
 
-*Please share your Name, Adress , Phone number , Email , profession , Company/College & years of Experience to get fee details.*"""
+*Please share your Name, Adress , Phone number , Email , Profession , Company/College & Years of Experience to get fee details.*"""
 
 COURSE_WORKSHOP = """⚡ *BIM Workshops — Upcoming (Free to Join!)*
 
