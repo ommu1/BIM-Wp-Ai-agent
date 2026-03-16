@@ -51,11 +51,12 @@ COURSE_ARCH = """🏛️ *BIM Training for Architecture, Structure & Interior De
 ✅ Certificate of Completion
 
 *To get fee details & batch dates, please share:*
-📝 Your *Name*
-🌆 *City & Country*
-📧 *Email Address*
-💼 *Profession* (Student / Working Professional)
-📅 *Years of Experience*"""
+  Your *Name*
+  *City & Country*
+  *Email Address*
+  *Profession* (Student / Working Professional)
+  *Company/College
+  *Years of Experience*"""
 
 COURSE_MEPF = """⚙️ *MEPF BIM Training*
 
