@@ -34,8 +34,8 @@ TRAINING_MENU_SECTIONS = [
     {
         "title": "BIM Courses",
         "rows": [
-            {"id": "arch_bim",  "title": "🏛️ Architecture & Structure",  "description": "Revit · Navisworks · BIM 360 · AutoCAD"},
-            {"id": "mepf_bim",  "title": "⚙️ MEPF BIM Training",              "description": "MEP Coordination · Clash Detection · Revit MEP"},
+            {"id": "arch_bim",  "title": "🏛️ Arch, Structure & Int. Design",  "description": "Revit · Navisworks · ACC · DYANMO"},
+            {"id": "mepf_bim",  "title": "⚙️ MEPF BIM Training",              "description": "Revit MEP · Navisworks · ACC "},
             {"id": "workshop",  "title": "⚡ BIM Workshop",             "description": "Upcoming batch — register now"},
             {"id": "back_main", "title": "↩ Back to Main Menu",               "description": ""},
         ]
