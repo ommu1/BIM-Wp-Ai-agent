@@ -60,12 +60,8 @@ COURSE_ARCH = """🏛️ *BIM Training for Architecture, Structure & Interior De
 
 COURSE_MEPF = """⚙️ *MEPF BIM Training*
 
-✅ MEP Modelling & Coordination
-✅ Clash Detection with Navisworks
-✅ Revit MEP (Mechanical, Electrical, Plumbing)
-✅ BIM 360 Cloud Collaboration
-✅ Real project walkthroughs
-✅ Certificate of Completion
+For BIM MEP Trainings (For MEP Engineers) visit our MEP Training Partner Website :
+https://bimsavvyacademy.com/courses
 
 *Please share your Name, City, Email & Experience to get fee details.*"""
 
