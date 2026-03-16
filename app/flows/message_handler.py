@@ -50,8 +50,20 @@ async def handle_incoming_message(
     lower = (text or "").lower().strip()
 
     # ── GLOBAL KEYWORDS ────────────────────────────────────────────────────
-    if lower in ("hi", "hello", "start", "menu", "") or session.stage == "start":
+    if lower in ("hi", "hello", "start", "menu", "bim", ""):
         return await handle_welcome(phone)
+
+    if session.stage == "start":
+        return await wa.send_text(
+            phone,
+            "👋 *Welcome to BIM Training & Projects!*\n\n"
+            "To get started, please type one of these:\n\n"
+            "• *Hi* — Main menu\n"
+            "• *BIM* — Course information\n"
+            "• *Projects* — Project enquiries\n"
+            "• *Student* — Existing student portal\n"
+            "• *Help* — Talk to our team"
+        )
 
     if lower in ("restart", "reset", "main menu", "back to menu"):
         session_store.reset(phone)
