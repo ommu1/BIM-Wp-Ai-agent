@@ -26,7 +26,15 @@ async def handle_course_selection(phone: str, list_id: str, text: str):
     lower = (text or "").lower()
 
     if list_id == "arch_bim" or any(w in lower for w in ["architect", "structure", "interior", "id bim"]):
-        await wa.send_text(phone, M.COURSE_ARCH)
+        await wa.send_buttons(
+            phone,
+            M.COURSE_ARCH,
+            [
+                {"id": "brochure",   "label": "Download Brochure"},
+                {"id": "enroll_now", "label": "Enroll Now"},
+                {"id": "back_main",  "label": "Back to Menu"},
+            ]
+        )
         session_store.update(phone, stage="collecting_details", sub_flow="arch_bim")
 
     elif list_id == "mepf_bim" or any(w in lower for w in ["mepf", "mep", "mechanical", "electrical", "plumbing"]):
