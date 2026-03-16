@@ -42,14 +42,13 @@ TRAINING_MENU_SECTIONS = [
     }
 ]
 
-COURSE_ARCH = """🏛️ *Architecture, Structure & Interior Design BIM*
+COURSE_ARCH = """🏛️ *BIM Training for Architecture, Structure & Interior Design *
 
 ✅ Live online sessions with expert trainer
-✅ Revit + Navisworks + BIM 360 + AutoCAD
+✅ Revit + Navisworks + ACC + DYANMO
 ✅ Real project-based learning
 ✅ WhatsApp group support throughout
 ✅ Certificate of Completion
-✅ 9+ years of trainer expertise
 
 *To get fee details & batch dates, please share:*
 📝 Your *Name*
