@@ -50,14 +50,26 @@ async def handle_incoming_message(
     lower = (text or "").lower().strip()
 
     # ── GLOBAL KEYWORDS ────────────────────────────────────────────────────
-    if lower in ("hi", "hello", "start", "menu", "bim", ""):
+    if lower in ("hi", "hello", "start", "menu", "bim", "hey", ""):
         return await handle_welcome(phone)
 
     if session.stage == "start":
+        # New or expired session with random text
+        if any(w in lower for w in ["train", "course", "revit", "mepf", "learn"]):
+            return await start_training_flow(phone)
+        if any(w in lower for w in ["project", "architecture", "interior", "design"]):
+            from app.flows.projects_flow import start_projects_flow
+            return await start_projects_flow(phone)
+        if any(w in lower for w in ["student", "existing", "portal"]):
+            from app.flows.student_flow import start_student_flow
+            return await start_student_flow(phone)
+        if any(w in lower for w in ["help", "human", "talk", "call", "agent"]):
+            return await handle_welcome(phone)
+        # Truly random text from new user
         return await wa.send_text(
             phone,
             "👋 *Welcome to BIM Training & Projects!*\n\n"
-            "To get started, please type one of these:\n\n"
+            "To get started please type:\n\n"
             "• *Hi* — Main menu\n"
             "• *BIM* — Course information\n"
             "• *Projects* — Project enquiries\n"
