@@ -53,7 +53,7 @@ async def handle_incoming_message(
     if lower in ("hi", "hello", "start", "menu", "bim", "hey", ""):
         return await handle_welcome(phone)
 
-       if session.stage == "start":
+    if session.stage == "start":
         if lower in ("hi", "hello", "start", "menu", "bim", "hey", ""):
             return await handle_welcome(phone)
         if any(w in lower for w in ["train", "course", "revit", "mepf", "learn"]):
