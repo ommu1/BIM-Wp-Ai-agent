@@ -67,9 +67,9 @@ https://bimsavvyacademy.com/courses
 
 COURSE_WORKSHOP = """⚡ *BIM Workshops — Upcoming !*
 
-📅 Intensive, focused sessions on specific BIM topics
-💰 *Fee:* 
-🔗 *Mode:* Online 
+   Intensive, focused sessions on specific BIM topics
+   *Fee:* 
+   *Mode:* Online 
 
 *To register, please share:*
 📝 *Name, Email, Phone, Profession , Company/College , Address *"""
