@@ -50,12 +50,13 @@ COURSE_ARCH = """🏛️ *BIM Training for Architecture, Structure & Interior De
 ✅ WhatsApp group support throughout
 ✅ Certificate of Completion
 
-*To get fee details & batch dates, please share:*
+*To get fee details & batch dates, Please reply with your details in this exact format:*
   Your *Name*
-  *City & Country*
+  *Phone NUmber*
   *Email Address*
+  *address*
   *Profession* (Student / Working Professional)
-  *Company/College
+  *Company or College
   *Years of Experience*"""
 
 COURSE_MEPF = """⚙️ *MEPF BIM Training*
@@ -63,7 +64,8 @@ COURSE_MEPF = """⚙️ *MEPF BIM Training*
 For BIM MEP Trainings (For MEP Engineers) visit our MEP Training Partner Website :
 https://bimsavvyacademy.com/courses
 
-*Please share your Name, Adress , Phone number , Email , Profession , Company/College & Years of Experience to get fee details.*"""
+*Please share your details in exact format:*
+ Name, , Phone number , Email , Address , Profession , Company/College & Years of Experience to get fee details.*"""
 
 COURSE_WORKSHOP = """⚡ *BIM Workshops — Upcoming !*
 
@@ -71,8 +73,8 @@ COURSE_WORKSHOP = """⚡ *BIM Workshops — Upcoming !*
    *Fee:* 
    *Mode:* Online 
 
-*To register, please share:*
-📝 *Name, Email, Phone, Profession , Company/College , Address *"""
+*To register, please share in exact format:*
+📝 *Name, Phone, Email , Address , Profession , Company/College , Experience *"""
 
 def confirm_details_received(name: str) -> str:
     return f"""✅ Thank you, *{name}!*
