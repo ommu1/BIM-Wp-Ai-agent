@@ -108,12 +108,19 @@ async def handle_details_collection(phone: str, text: str):
 
     if has_name and (has_email or has_city):
         # Enough info — log to sheet
-        await asyncio.to_thread(sheets.log_training_lead, {
-            "phone": phone,
-            **new_data,
-            "course_interest": session.sub_flow or "General",
-            "source": "WhatsApp Bot",
-        })
+        if session.sub_flow == "workshop":
+            await asyncio.to_thread(sheets.log_workshop_lead, {
+                "phone": phone, **new_data,
+            })
+        elif session.sub_flow == "mepf_bim":
+            await asyncio.to_thread(sheets.log_mepf_lead, {
+                "phone": phone, **new_data,
+            })
+        else:
+            await asyncio.to_thread(sheets.log_training_lead, {
+                "phone": phone, **new_data,
+                "course_interest": "Architecture & Structure",
+            })
         await wa.send_buttons(
             phone,
             M.confirm_details_received(new_data["name"]),
@@ -198,9 +205,8 @@ async def start_enrollment(phone: str):
             "_We'll send the Zoom link to this number before the event._\n\n"
             "You're all set! See you there 🎓"
         )
-        await asyncio.to_thread(sheets.log_training_lead, {
+        await asyncio.to_thread(sheets.log_workshop_lead, {
             "phone": phone, **session.data,
-            "course_interest": "Workshop", "source": "WhatsApp Bot"
         })
         session_store.update(phone, stage="post_enrollment")
         return

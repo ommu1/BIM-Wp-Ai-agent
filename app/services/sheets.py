@@ -1,6 +1,4 @@
 # app/services/sheets.py
-# Google Sheets integration via gspread
-
 import json
 import random
 from datetime import datetime
@@ -33,99 +31,95 @@ def now_str() -> str:
     return datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 
 
-# ── LOG TRAINING LEAD ─────────────────────────────────────────────────────────
+# ── LOG BIM TRAINING LEAD (Architecture & Structure) ─────────────────────────
 def log_training_lead(data: Dict[str, Any]) -> bool:
     try:
-        ws = _get_sheet("Training Leads")
+        ws = _get_sheet("BIM Training Leads")
         row = [
             now_str(),
-            data.get("phone", ""),
             data.get("name", ""),
+            data.get("phone", ""),
             data.get("email", ""),
-            data.get("city", ""),
-            data.get("country", "India"),
+            data.get("address", "") or data.get("city", ""),
             data.get("profession", ""),
+            data.get("college/company", ""),
             data.get("experience", ""),
-            data.get("college", ""),
-            data.get("course_interest", ""),
-            data.get("source", "WhatsApp Bot"),
+            data.get("course_interest", "Architecture & Structure"),
             "New Lead",
-            "",
         ]
         ws.append_row(row, value_input_option="USER_ENTERED")
-        logger.info(f"Training lead logged | phone={data.get('phone')} name={data.get('name')}")
+        logger.info(f"BIM Training lead logged | phone={data.get('phone')} name={data.get('name')}")
         return True
     except Exception as e:
-        logger.error(f"Failed to log training lead | {e}")
+        logger.error(f"Failed to log BIM training lead | {e}")
         return False
 
 
-# ── LOG PROJECT LEAD ──────────────────────────────────────────────────────────
-def log_project_lead(data: Dict[str, Any]) -> bool:
+# ── LOG MEPF LEAD ─────────────────────────────────────────────────────────────
+def log_mepf_lead(data: Dict[str, Any]) -> bool:
     try:
-        ws = _get_sheet("Project Leads")
+        ws = _get_sheet("MEPF Leads")
         row = [
             now_str(),
-            data.get("phone", ""),
             data.get("name", ""),
+            data.get("phone", ""),
             data.get("email", ""),
-            data.get("country", ""),
-            data.get("city", ""),
-            data.get("project_type", ""),
-            data.get("description", ""),
-            data.get("source", "WhatsApp Bot"),
+            data.get("address", "") or data.get("city", ""),
+            data.get("profession", ""),
+            data.get("college/company", ""),
+            data.get("experience", ""),
+            "MEPF BIM Training",
             "New Lead",
         ]
         ws.append_row(row, value_input_option="USER_ENTERED")
-        logger.info(f"Project lead logged | phone={data.get('phone')}")
+        logger.info(f"MEPF lead logged | phone={data.get('phone')}")
         return True
     except Exception as e:
-        logger.error(f"Failed to log project lead | {e}")
+        logger.error(f"Failed to log MEPF lead | {e}")
         return False
 
 
-# ── LOG INSTAGRAM LEAD ────────────────────────────────────────────────────────
-def log_ig_lead(data: Dict[str, Any]) -> bool:
+# ── LOG WORKSHOP LEAD ─────────────────────────────────────────────────────────
+def log_workshop_lead(data: Dict[str, Any]) -> bool:
     try:
-        ws = _get_sheet("IG Leads")
+        ws = _get_sheet("WORKSHOP leads")
         row = [
             now_str(),
-            data.get("ig_username", ""),
             data.get("name", ""),
-            data.get("email", ""),
             data.get("phone", ""),
-            data.get("interest", ""),
-            "Instagram",
-            "New Lead",
+            data.get("email", ""),
+            data.get("address", "") or data.get("city", ""),
+            data.get("profession", ""),
+            data.get("college/company", ""),
+            data.get("experience", ""),
+            "BIM Workshop",
+            "New Registration",
         ]
         ws.append_row(row, value_input_option="USER_ENTERED")
+        logger.info(f"Workshop lead logged | phone={data.get('phone')}")
         return True
     except Exception as e:
-        logger.error(f"Failed to log IG lead | {e}")
+        logger.error(f"Failed to log workshop lead | {e}")
         return False
 
 
 # ── ENROLL STUDENT ────────────────────────────────────────────────────────────
 def enroll_student(data: Dict[str, Any]) -> Optional[str]:
     try:
-        ws = _get_sheet("Students")
+        ws = _get_sheet("Existing students")
         student_id = generate_student_id()
         row = [
             student_id,
             data.get("name", ""),
             data.get("phone", ""),
             data.get("email", ""),
-            data.get("address", ""),
-            data.get("city", ""),
+            data.get("address", "") or data.get("city", ""),
             data.get("college", ""),
             data.get("profession", ""),
             data.get("experience", ""),
             data.get("course", ""),
             data.get("batch_date", ""),
             "Payment Pending",
-            "", "", "",  # Inst1 Amount, Paid, Date
-            "", "", "",  # Inst2 Amount, Paid, DueDate
-            "", "",      # Attendance, ProjectSubmitted
             now_str(),
         ]
         ws.append_row(row, value_input_option="USER_ENTERED")
@@ -134,6 +128,29 @@ def enroll_student(data: Dict[str, Any]) -> Optional[str]:
     except Exception as e:
         logger.error(f"Failed to enroll student | {e}")
         return None
+
+
+# ── VERIFY STUDENT BY ID ──────────────────────────────────────────────────────
+def verify_student(student_id: str) -> Dict[str, Any]:
+    try:
+        ws = _get_sheet("Existing students")
+        rows = ws.get_all_values()
+        for row in rows[1:]:
+            if row and row[0] == student_id:
+                return {
+                    "found":       True,
+                    "student_id":  row[0],
+                    "name":        row[1],
+                    "phone":       row[2],
+                    "email":       row[3],
+                    "course":      row[8] if len(row) > 8  else "",
+                    "batch_date":  row[9] if len(row) > 9  else "",
+                    "status":      row[10] if len(row) > 10 else "",
+                }
+        return {"found": False}
+    except Exception as e:
+        logger.error(f"Failed to verify student | {e}")
+        return {"found": False}
 
 
 # ── LOG PAYMENT ───────────────────────────────────────────────────────────────
@@ -158,31 +175,6 @@ def log_payment(data: Dict[str, Any]) -> bool:
         return False
 
 
-# ── VERIFY STUDENT BY ID ──────────────────────────────────────────────────────
-def verify_student(student_id: str) -> Dict[str, Any]:
-    try:
-        ws = _get_sheet("Students")
-        rows = ws.get_all_values()
-        for row in rows[1:]:  # skip header
-            if row and row[0] == student_id:
-                return {
-                    "found": True,
-                    "student_id":  row[0],
-                    "name":        row[1],
-                    "phone":       row[2],
-                    "email":       row[3],
-                    "course":      row[9] if len(row) > 9  else "",
-                    "batch_date":  row[10] if len(row) > 10 else "",
-                    "status":      row[11] if len(row) > 11 else "",
-                    "attendance":  row[18] if len(row) > 18 else "",
-                    "project_done":row[19] if len(row) > 19 else "",
-                }
-        return {"found": False}
-    except Exception as e:
-        logger.error(f"Failed to verify student | {e}")
-        return {"found": False}
-
-
 # ── GET ADMIN CONFIG ──────────────────────────────────────────────────────────
 def get_admin_config() -> Dict[str, str]:
     try:
@@ -200,34 +192,23 @@ def get_admin_config() -> Dict[str, str]:
 
 # ── GET STUDENTS WITH PENDING INSTALLMENTS ────────────────────────────────────
 def get_students_with_pending_installments() -> List[Dict]:
-    from datetime import timedelta
     try:
-        ws = _get_sheet("Students")
+        ws = _get_sheet("Existing students")
         rows = ws.get_all_values()
         pending = []
         today = datetime.now()
         for row in rows[1:]:
-            if len(row) < 18:
+            if len(row) < 12:
                 continue
-            inst2_due   = row[17]  # Inst2DueDate
-            inst2_paid  = row[16]  # Inst2Paid
-            if inst2_due and inst2_paid != "Y":
-                try:
-                    due_date = datetime.strptime(inst2_due, "%d-%m-%Y")
-                    days_left = (due_date - today).days
-                    if 0 <= days_left <= 3:
-                        pending.append({
-                            "student_id": row[0],
-                            "name":       row[1],
-                            "phone":      row[2],
-                            "email":      row[3],
-                            "course":     row[9],
-                            "amount":     row[15],
-                            "due_date":   inst2_due,
-                            "days_left":  days_left,
-                        })
-                except ValueError:
-                    pass
+            status = row[10] if len(row) > 10 else ""
+            if "pending" in status.lower():
+                pending.append({
+                    "student_id": row[0],
+                    "name":       row[1],
+                    "phone":      row[2],
+                    "email":      row[3],
+                    "course":     row[8] if len(row) > 8 else "",
+                })
         return pending
     except Exception as e:
         logger.error(f"Failed to get pending installments | {e}")
@@ -237,18 +218,18 @@ def get_students_with_pending_installments() -> List[Dict]:
 # ── GET ENROLLED STUDENTS ─────────────────────────────────────────────────────
 def get_enrolled_students() -> List[Dict]:
     try:
-        ws = _get_sheet("Students")
+        ws = _get_sheet("Existing students")
         rows = ws.get_all_values()
         active_statuses = {"Active", "Payment Confirmed"}
         students = []
         for row in rows[1:]:
-            if len(row) > 11 and row[11] in active_statuses:
+            if len(row) > 10 and row[10] in active_statuses:
                 students.append({
                     "student_id": row[0],
                     "name":       row[1],
                     "phone":      row[2],
                     "email":      row[3],
-                    "course":     row[9] if len(row) > 9 else "",
+                    "course":     row[8] if len(row) > 8 else "",
                 })
         return students
     except Exception as e:
