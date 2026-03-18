@@ -175,7 +175,7 @@ async def handle_details_collection(phone: str, text: str):
             "_Name, Phone, Email, City/Country, Profession, College/Company, Experience_\n\n"
             "*Example:*\n"
             "Rahul Sharma, 9876543210, rahul@gmail.com, Mumbai India, Student, IIT Bombay, 0 years"
-            
+        )
 # ── STEP 4: Post-details button handling ─────────────────────────────────────
 async def handle_post_details(phone: str, button_id: str, text: str):
     lower = (text or "").lower()
