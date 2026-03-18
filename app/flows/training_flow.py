@@ -2,6 +2,7 @@
 # Full BIM training enquiry → course selection → detail collection → enrollment → payment
 
 import asyncio
+from pydoc import text
 from app.services import whatsapp as wa
 from app.services import sheets, ai as ai_svc
 from app.config import messages as M
@@ -75,38 +76,75 @@ async def handle_details_collection(phone: str, text: str):
         session_store.reset(phone)
         return await handle_welcome(phone)
 
-    
     import re
     new_data = dict(session.data)
 
-    # Extract email
+    # Step 1 — Extract email (most reliable, has @ symbol)
     email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', text)
     if email_match:
         new_data["email"] = email_match.group(0)
-        text_no_email = text.replace(email_match.group(0), "")
+        text_clean = text.replace(email_match.group(0), "").strip()
     else:
-        text_no_email = text
+        text_clean = text
 
-    # Split by comma or newline to get other fields
-    parts = [p.strip() for p in re.split(r'[,\n]', text_no_email) if p.strip()]
+    # Step 2 — Extract phone number (10 digits)
+    phone_match = re.search(r'\b\d{10}\b', text_clean)
+    if phone_match:
+        new_data["user_phone"] = phone_match.group(0)
+        text_clean = text_clean.replace(phone_match.group(0), "").strip()
 
-    if parts and not new_data.get("name"):
-        new_data["name"] = parts[0]
-    if len(parts) > 1 and not new_data.get("city"):
-        new_data["city"] = parts[1]
-    if len(parts) > 2 and not new_data.get("profession"):
-        new_data["profession"] = parts[2]
-    if len(parts) > 3 and not new_data.get("experience"):
-        new_data["experience"] = parts[3]
+    # Step 3 — Extract experience (number + year or just number)
+    exp_match = re.search(r'\b(\d+)\s*(?:year|yr|years|yrs)?\b', text_clean, re.IGNORECASE)
+
+    # Step 4 — Split remaining by comma
+    parts = [p.strip() for p in text_clean.split(",") if p.strip()]
+
+    for part in parts:
+        low = part.lower()
+
+        # Skip empty or very short parts
+        if len(part) < 2:
+            continue
+
+        # Detect experience — contains year keyword or is just a number
+        if re.search(r'\d+\s*(year|yr|years|yrs|fresher)', low) or (part.strip().isdigit() and not new_data.get("experience")):
+            if not new_data.get("experience"):
+                new_data["experience"] = part.strip()
+
+        # Detect profession keywords
+        elif any(w in low for w in ["student", "working professional", "professional", "freelancer", "architect", "engineer", "designer", "fresher", "employed", "self"]):
+            if not new_data.get("profession"):
+                new_data["profession"] = part.strip()
+
+        # Detect college/company keywords
+        elif any(w in low for w in ["university", "college", "institute", "iit", "nit", "bits", "pvt", "ltd", "technologies", "solutions", "architects", "consultants", "school", "academy"]):
+            if not new_data.get("college"):
+                new_data["college"] = part.strip()
+
+        # Detect address — contains country/city keywords
+        elif any(w in low for w in ["india", "noida", "delhi", "mumbai", "bangalore", "bengaluru", "hyderabad", "chennai", "pune", "kolkata", "dubai", "uk", "usa", "canada", "australia", "singapore", "nepal", "bangladesh", "pakistan", "uae", "qatar", "london", "new york"]):
+            if not new_data.get("address"):
+                new_data["address"] = part.strip()
+
+        # First short unassigned part = name
+        elif not new_data.get("name") and len(part.split()) <= 5:
+            new_data["name"] = part.strip()
+
+        # Anything else unassigned = address fallback then college fallback
+        elif not new_data.get("address"):
+            new_data["address"] = part.strip()
+        elif not new_data.get("college"):
+            new_data["college"] = part.strip()
 
     # Save full text as backup
     new_data["description"] = text
 
-    has_name  = bool(new_data.get("name"))
-    has_email = bool(new_data.get("email"))
-    has_city  = bool(new_data.get("city"))
+    has_name    = bool(new_data.get("name"))
+    has_email   = bool(new_data.get("email"))
+    has_address = bool(new_data.get("address"))
 
-    if has_name and (has_email or has_city):
+    if has_name and (has_email or has_address):
+
         # Enough info — log to sheet
         if session.sub_flow == "workshop":
             await asyncio.to_thread(sheets.log_workshop_lead, {
@@ -132,13 +170,12 @@ async def handle_details_collection(phone: str, text: str):
         )
         session_store.update(phone, stage="post_details")
     else:
-        missing = []
-        if not has_name:  missing.append("*Name*")
-        if not has_email: missing.append("*Email Address*")
-        if not has_city:  missing.append("*City & Country*")
-        await wa.send_text(phone, f"Almost there! Could you share your {', '.join(missing)} as well? 😊")
-
-
+        await wa.send_text(phone,
+            "Please share your details in this format:\n\n"
+            "_Name, Phone, Email, City/Country, Profession, College/Company, Experience_\n\n"
+            "*Example:*\n"
+            "Rahul Sharma, 9876543210, rahul@gmail.com, Mumbai India, Student, IIT Bombay, 0 years"
+            
 # ── STEP 4: Post-details button handling ─────────────────────────────────────
 async def handle_post_details(phone: str, button_id: str, text: str):
     lower = (text or "").lower()
