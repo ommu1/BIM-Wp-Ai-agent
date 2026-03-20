@@ -79,65 +79,38 @@ async def handle_details_collection(phone: str, text: str):
     import re
     new_data = dict(session.data)
 
-    # Step 1 — Extract email (most reliable, has @ symbol)
+    # Extract email
     email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', text)
     if email_match:
         new_data["email"] = email_match.group(0)
-        text_clean = text.replace(email_match.group(0), "").strip()
+        text_clean = text.replace(email_match.group(0), "")
     else:
         text_clean = text
 
-    # Step 2 — Extract phone number (10 digits)
+    # Extract phone (10 digits)
     phone_match = re.search(r'\b\d{10}\b', text_clean)
     if phone_match:
         new_data["user_phone"] = phone_match.group(0)
-        text_clean = text_clean.replace(phone_match.group(0), "").strip()
+        text_clean = text_clean.replace(phone_match.group(0), "")
 
-    # Step 3 — Extract experience (number + year or just number)
-    exp_match = re.search(r'\b(\d+)\s*(?:year|yr|years|yrs)?\b', text_clean, re.IGNORECASE)
-
-    # Step 4 — Split remaining by comma
+    # Split by comma — positional assignment
     parts = [p.strip() for p in text_clean.split(",") if p.strip()]
 
-    for part in parts:
-        low = part.lower()
+    # Assign positionally — matches the format we asked:
+    # Name, Address, Profession, College, Experience
+    if len(parts) >= 1 and not new_data.get("name"):
+        new_data["name"] = parts[0]
+    if len(parts) >= 2 and not new_data.get("address"):
+        new_data["address"] = parts[1]
+    if len(parts) >= 3 and not new_data.get("profession"):
+        new_data["profession"] = parts[2]
+    if len(parts) >= 4 and not new_data.get("college"):
+        new_data["college"] = parts[3]
+    if len(parts) >= 5 and not new_data.get("experience"):
+        new_data["experience"] = parts[4]
 
-        # Skip empty or very short parts
-        if len(part) < 2:
-            continue
-
-        # Detect experience — contains year keyword or is just a number
-        if re.search(r'\d+\s*(year|yr|years|yrs|fresher)', low) or (part.strip().isdigit() and not new_data.get("experience")):
-            if not new_data.get("experience"):
-                new_data["experience"] = part.strip()
-
-        # Detect profession keywords
-        elif any(w in low for w in ["student", "working professional", "professional", "freelancer", "architect", "engineer", "designer", "fresher", "employed", "self"]):
-            if not new_data.get("profession"):
-                new_data["profession"] = part.strip()
-
-        # Detect college/company keywords
-        elif any(w in low for w in ["university", "college", "institute", "iit", "nit", "bits", "pvt", "ltd", "technologies", "solutions", "architects", "consultants", "school", "academy"]):
-            if not new_data.get("college"):
-                new_data["college"] = part.strip()
-
-        # Detect address — contains country/city keywords
-        elif any(w in low for w in ["india", "noida", "delhi", "mumbai", "bangalore", "bengaluru", "hyderabad", "chennai", "pune", "kolkata", "dubai", "uk", "usa", "canada", "australia", "singapore", "nepal", "bangladesh", "pakistan", "uae", "qatar", "london", "new york"]):
-            if not new_data.get("address"):
-                new_data["address"] = part.strip()
-
-        # First short unassigned part = name
-        elif not new_data.get("name") and len(part.split()) <= 5:
-            new_data["name"] = part.strip()
-
-        # Anything else unassigned = address fallback then college fallback
-        elif not new_data.get("address"):
-            new_data["address"] = part.strip()
-        elif not new_data.get("college"):
-            new_data["college"] = part.strip()
-
-    # Save full text as backup
     new_data["description"] = text
+
 
     has_name    = bool(new_data.get("name"))
     has_email   = bool(new_data.get("email"))
