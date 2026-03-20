@@ -131,8 +131,21 @@ async def handle_incoming_message(
         return await route_from_main_menu(phone, button_id or list_id or "", text or "")
 
     # Training
-    if stage == "training_menu":
-        return await handle_course_selection(phone, list_id or button_id or "", text or "")
+    if stage == "training_check":
+        if button_id == "existing_yes" or "yes" in lower:
+            from app.flows.student_flow import start_student_flow
+            return await start_student_flow(phone)
+        else:
+            from app.flows.training_flow import start_training_flow
+            await wa.send_list(
+                phone,
+                M.TRAINING_MENU_BODY,
+                "📚 View Courses",
+                M.TRAINING_MENU_SECTIONS,
+                footer_text="bimtrainingandprojects.com",
+            )
+            session_store.update(phone, stage="training_menu", flow="training")
+            return
     if stage == "collecting_details":
         return await handle_details_collection(phone, text or "")
     if stage == "post_details":

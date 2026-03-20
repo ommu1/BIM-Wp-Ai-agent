@@ -12,15 +12,15 @@ from app.utils.logger import logger
 
 # ── STEP 1: Show course list ──────────────────────────────────────────────────
 async def start_training_flow(phone: str):
-    await wa.send_list(
+    await wa.send_buttons(
         phone,
-        M.TRAINING_MENU_BODY,
-        "📚 View Courses",
-        M.TRAINING_MENU_SECTIONS,
-        footer_text="bimtrainingandprojects.com",
+        "Are you an *Existing Student* of BIM Training & Projects?",
+        [
+            {"id": "existing_yes", "label": "✅ Yes, I am"},
+            {"id": "existing_no",  "label": "🆕 No, I am new"},
+        ]
     )
-    session_store.update(phone, stage="training_menu", flow="training")
-
+    session_store.update(phone, stage="training_check", flow="training")
 
 # ── STEP 2: Handle course selection ──────────────────────────────────────────
 async def handle_course_selection(phone: str, list_id: str, text: str):
