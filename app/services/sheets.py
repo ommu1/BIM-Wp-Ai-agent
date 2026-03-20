@@ -82,7 +82,7 @@ def log_mepf_lead(data: Dict[str, Any]) -> bool:
 # ── LOG WORKSHOP LEAD ─────────────────────────────────────────────────────────
 def log_workshop_lead(data: Dict[str, Any]) -> bool:
     try:
-        ws = _get_sheet("WORKSHOP leads")
+        ws = _get_sheet("WORKSHOP Leads")
         row = [
             now_str(),
             data.get("name", ""),
