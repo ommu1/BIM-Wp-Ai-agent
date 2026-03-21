@@ -19,18 +19,19 @@ async def handle_project_selection(phone: str, button_id: str, text: str):
 
     if button_id == "arch_project" or any(w in lower for w in ["architect", "interior", "design"]):
         await wa.send_text(phone, M.PROJECT_ARCH_DETAILS)
-        session_store.update(phone, stage="collecting_project_details", sub_flow="architecture")
+        session_store.update(phone, stage="collecting_project_details", sub_flow="Design Projects")
 
     elif button_id == "bim_project" or any(w in lower for w in ["bim", "modelling", "clash", "coordination"]):
         await wa.send_text(phone, M.PROJECT_BIM_DETAILS)
-        session_store.update(phone, stage="collecting_project_details", sub_flow="bim")
+        session_store.update(phone, stage="collecting_project_details", sub_flow="BIM Projects")
 
     elif button_id == "discuss" or any(w in lower for w in ["discuss", "call", "quote"]):
         await wa.send_text(phone,
             "📞 Sure! Please share:\n\n📝 *Name*\n🌐 *Country & City*\n📧 *Email*\n\n"
             "Our expert will call/WhatsApp you within 4–8 hours 🙏"
         )
-        session_store.update(phone, stage="collecting_project_details", sub_flow="discuss")
+        session_store.update(phone, stage="collecting_project_details", sub_flow="Discussion")
+
     else:
         await start_projects_flow(phone)
 
@@ -79,6 +80,7 @@ async def handle_project_details(phone: str, text: str):
             "email":       new_data.get("email", ""),
             "address":     new_data.get("address", ""),
             "description": new_data.get("description", ""),
+            "project_type": session.sub_flow or "General",
         })
         await wa.send_buttons(
             phone,

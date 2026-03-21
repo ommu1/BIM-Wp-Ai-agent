@@ -113,6 +113,7 @@ def log_project_lead(data: Dict[str, Any]) -> bool:
             data.get("address", "") or data.get("city", ""),
             data.get("email", ""),
             data.get("phone", ""),
+             data.get("project_type", "General"),
             data.get("Project description", ""),
             "New Lead",
         ]
