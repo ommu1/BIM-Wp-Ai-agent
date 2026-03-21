@@ -1,6 +1,7 @@
 # app/flows/message_handler.py
 # Central router — every incoming WhatsApp message passes through here
 
+import asyncio
 from app.services import whatsapp as wa
 from app.services import ai as ai_svc
 from app.config import messages as M
@@ -129,6 +130,55 @@ async def handle_incoming_message(
 
     if stage == "main_menu":
         return await route_from_main_menu(phone, button_id or list_id or "", text or "")
+    
+    if stage == "other_enquiry":
+            
+     import re
+
+    name = ""
+    phone_num = ""
+    email = ""
+    address = ""
+
+    email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', text)
+    if email_match:
+            email = email_match.group(0)
+            text_clean = text.replace(email_match.group(0), "")
+    else:
+            text_clean = text
+
+    phone_match = re.search(r'\b\d{10}\b', text_clean)
+
+    if phone_match:
+            phone_num = phone_match.group(0)
+            text_clean = text_clean.replace(phone_match.group(0), "")
+  
+    parts = [p.strip() for p in text_clean.split(",") if p.strip()]
+
+    if len(parts) >= 1:
+            name = parts[0]
+    if len(parts) >= 2:
+            address = parts[1]
+
+    from app.services import sheets
+    await asyncio.to_thread(sheets.log_training_lead, {
+            "phone": phone,
+            "name": name,
+            "user_phone": phone_num,
+            "email": email,
+            "address": address,
+            "course_interest": "Other Enquiry",
+        })
+
+    await wa.send_text(
+            phone,
+            f"*Thank you{', ' + name if name else ''}!* ✅\n\n"
+            "Your details have been noted. Our team will call you back within *2-4 hours*.\n\n"
+            "📞 *+91 72178 22883*\n"
+            "📧 *askus@bimtrainingandprojects.com*"
+        )
+    session_store.update(phone, stage="main_menu")
+    return
 
     # Training
     if stage == "training_check":
