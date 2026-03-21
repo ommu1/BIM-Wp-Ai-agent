@@ -23,7 +23,7 @@ www.bimtrainingandprojects.com
 
 GREETING_BUTTONS = [
     {"id": "training",  "label": "🎓 BIM Training / Workshop"},
-    {"id": "projects",  "label": "🏗️ Architecture / BIM Project"},
+    {"id": "projects",  "label": "🏗️ Projects"},
     {"id": "other",     "label": "📞 Other Enquiry"},
 ]
 
