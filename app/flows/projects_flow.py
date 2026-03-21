@@ -36,40 +36,68 @@ async def handle_project_selection(phone: str, button_id: str, text: str):
 
 
 async def handle_project_details(phone: str, text: str):
-    session  = session_store.get_or_create(phone)
-    extracted = await ai_svc.extract_contact_details(text)
-    new_data  = dict(session.data)
+    import re
+    session = session_store.get_or_create(phone)
+    new_data = dict(session.data)
 
-    for field in ["name", "email", "city", "country", "description"]:
-        if extracted.get(field):
-            new_data[field] = extracted[field]
-    if not new_data.get("description") and len(text) > 20:
+    # Extract email
+    email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', text or "")
+    if email_match:
+        new_data["email"] = email_match.group(0)
+        text_clean = (text or "").replace(email_match.group(0), "")
+    else:
+        text_clean = text or ""
+
+    # Extract phone
+    phone_match = re.search(r'\b\d{10}\b', text_clean)
+    if phone_match:
+        new_data["user_phone"] = phone_match.group(0)
+        text_clean = text_clean.replace(phone_match.group(0), "")
+
+    # Split by comma — positional assignment
+    parts = [p.strip() for p in text_clean.split(",") if p.strip()]
+
+    if len(parts) >= 1 and not new_data.get("name"):
+        new_data["name"] = parts[0]
+    if len(parts) >= 2 and not new_data.get("address"):
+        new_data["address"] = parts[1]
+    if len(parts) > 2:
+        new_data["description"] = ", ".join(parts[2:])
+    elif len(text or "") > 20 and not new_data.get("description"):
         new_data["description"] = text
 
     session_store.update(phone, data=new_data)
 
-    if new_data.get("name") and (new_data.get("email") or new_data.get("city")):
+    has_name    = bool(new_data.get("name"))
+    has_email   = bool(new_data.get("email"))
+    has_address = bool(new_data.get("address"))
+
+    if has_name and (has_email or has_address):
         await asyncio.to_thread(sheets.log_project_lead, {
-            "phone": phone, **new_data,
-            "project_type": session.sub_flow or "General",
-            "source": "WhatsApp Bot",
+            "phone":       phone,
+            "name":        new_data.get("name", ""),
+            "email":       new_data.get("email", ""),
+            "address":     new_data.get("address", ""),
+            "description": new_data.get("description", ""),
         })
         await wa.send_buttons(
             phone,
             M.project_received(new_data["name"]),
             [
-                {"id": "send_files", "label": "📎 Share Project Files"},
-                {"id": "view_work",  "label": "🌐 View Our Work"},
-                {"id": "back_main",  "label": "↩ Main Menu"},
+                {"id": "send_files", "label": "Share Project Files"},
+                {"id": "view_work",  "label": "View Our Work"},
+                {"id": "back_main",  "label": "Main Menu"},
             ],
         )
         session_store.update(phone, stage="post_project_details")
     else:
-        missing = []
-        if not new_data.get("name"):  missing.append("*Name*")
-        if not new_data.get("email"): missing.append("*Email*")
-        if not new_data.get("city"):  missing.append("*City & Country*")
-        await wa.send_text(phone, f"Almost there! Could you share your {', '.join(missing)} as well? 😊")
+        await wa.send_text(
+            phone,
+            "Please share your details in this format:\n\n"
+            "_Name, Phone, Email, City/Country, Project Description_\n\n"
+            "*Example:*\n"
+            "_Rahul Sharma, 9876543210, rahul@gmail.com, Mumbai India, I want to learn Interior Design_"
+        )
 
 
 async def handle_post_project(phone: str, button_id: str, text: str):
@@ -88,8 +116,10 @@ async def handle_post_project(phone: str, button_id: str, text: str):
         from app.flows.welcome_flow import handle_welcome
         await handle_welcome(phone)
     else:
-        session = session_store.get_or_create(phone)
-        reply = await ai_svc.get_ai_reply(session.history, text)
-        session.add_history("user", text)
-        session.add_history("assistant", reply)
-        await wa.send_text(phone, reply)
+        await wa.send_text(
+            phone,
+            "Thank you for reaching out! 🙏\n\n"
+            "Our team will contact you within *4-8 hours*.\n\n"
+            "📞 *+91 72178 22883*\n"
+            "📧 *askus@bimtrainingandprojects.com*"
+        )
