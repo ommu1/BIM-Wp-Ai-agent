@@ -200,10 +200,10 @@ INSTALL_GUIDE = """💻 *Revit Installation Guide*
 _Facing issues? Send a screenshot and our team will help!_ 📸"""
 
 # ── PROJECTS ──────────────────────────────────────────────────────────────────
-PROJECT_MENU_BODY = "🏗️ *BIM & Design Projects*\n\nWe deliver world-class BIM and design services. What are you looking for?"
+PROJECT_MENU_BODY = "*What are you looking for?*"
 
 PROJECT_MENU_BUTTONS = [
-    {"id": "arch_project", "label": "🏛️ Architecture / Interior"},
+    {"id": "arch_project", "label": "🏛️ Design Projects"},
     {"id": "bim_project",  "label": "📐 BIM Projects"},
     {"id": "discuss",      "label": "📞 Discuss My Project"},
 ]
@@ -211,13 +211,12 @@ PROJECT_MENU_BUTTONS = [
 PROJECT_ARCH_DETAILS = """🏛️ *Architecture & Interior Design Projects*
 
 ✅ Architectural Design & Drawings
-✅ Interior Design & 3D Visualization
+✅ Interior Design 
 ✅ Landscape Design
-✅ Construction Documentation
-✅ Rendering & Walkthroughs
+✅ Rendering & 3D Visualization
 
-*To get a quote, please share:*
-📝 *Name, Country & City, Email*
+*To get a quote, please share your details in exact format:*
+📝 *Name, Country & City, Email ,Phone Number*
 📋 *Project Description* (building type, area, requirements)"""
 
 PROJECT_BIM_DETAILS = """📐 *BIM Projects — Coordination & Modelling*

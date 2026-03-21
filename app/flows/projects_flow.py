@@ -7,10 +7,12 @@ from app.utils.session_store import session_store
 
 
 async def start_projects_flow(phone: str):
-    await wa.send_buttons(phone, M.PROJECT_MENU_BODY, M.PROJECT_MENU_BUTTONS,
-                          header_text="🏗️ BIM Training & Projects")
+    await wa.send_buttons(
+        phone,
+        M.PROJECT_MENU_BODY,
+        M.PROJECT_MENU_BUTTONS,
+    )
     session_store.update(phone, stage="projects_menu", flow="projects")
-
 
 async def handle_project_selection(phone: str, button_id: str, text: str):
     lower = (text or "").lower()
