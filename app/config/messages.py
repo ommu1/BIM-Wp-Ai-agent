@@ -205,7 +205,6 @@ PROJECT_MENU_BODY = "*What are you looking for?*"
 PROJECT_MENU_BUTTONS = [
     {"id": "arch_project", "label": "🏛️ Design Projects"},
     {"id": "bim_project",  "label": "📐 BIM Projects"},
-    {"id": "discuss",      "label": "📞 Discuss My Project"},
 ]
 
 PROJECT_ARCH_DETAILS = """🏛️ *Architecture & Interior Design Projects*
@@ -227,8 +226,8 @@ PROJECT_BIM_DETAILS = """📐 *BIM Projects — Coordination & Modelling*
 ✅ As-Built Documentation
 ✅ LOD 100–400 modelling
 
-*Please share:*
-📝 *Name, Company/Firm, Country & City, Email*
+*Please share your details in the exact format *
+📝 *Name, Country & City, Email , Phone Number*
 📋 *Project Description*"""
 
 def project_received(name: str) -> str:

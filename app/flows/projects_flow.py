@@ -25,13 +25,6 @@ async def handle_project_selection(phone: str, button_id: str, text: str):
         await wa.send_text(phone, M.PROJECT_BIM_DETAILS)
         session_store.update(phone, stage="collecting_project_details", sub_flow="BIM Projects")
 
-    elif button_id == "discuss" or any(w in lower for w in ["discuss", "call", "quote"]):
-        await wa.send_text(phone,
-            "📞 Sure! Please share:\n\n📝 *Name*\n🌐 *Country & City*\n📧 *Email*\n\n"
-            "Our expert will call/WhatsApp you within 4–8 hours 🙏"
-        )
-        session_store.update(phone, stage="collecting_project_details", sub_flow="Discussion")
-
     else:
         await start_projects_flow(phone)
 
@@ -121,7 +114,7 @@ async def handle_post_project(phone: str, button_id: str, text: str):
         await wa.send_text(
             phone,
             "Thank you for reaching out! 🙏\n\n"
-            "Our team will contact you within *4-8 hours*.\n\n"
+            "Our team will contact you within *few hours*.\n\n"
             "📞 *+91 72178 22883*\n"
             "📧 *askus@bimtrainingandprojects.com*"
         )
