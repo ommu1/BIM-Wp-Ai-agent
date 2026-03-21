@@ -101,6 +101,26 @@ def log_workshop_lead(data: Dict[str, Any]) -> bool:
     except Exception as e:
         logger.error(f"Failed to log workshop lead | {e}")
         return False
+    
+# ── LOG OTHER ENQUIRY ─────────────────────────────────────────────────────────
+def log_other_enquiry(data: Dict[str, Any]) -> bool:
+    try:
+        ws = _get_sheet("Other Enquiry")
+        row = [
+            now_str(),
+            data.get("name", ""),
+            data.get("phone", ""),
+            data.get("email", ""),
+            data.get("address", ""),
+            data.get("description", ""),
+            "New Enquiry",
+        ]
+        ws.append_row(row, value_input_option="USER_ENTERED")
+        logger.info(f"Other enquiry logged | phone={data.get('phone')}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to log other enquiry | {e}")
+        return False    
 
 
 # ── ENROLL STUDENT ────────────────────────────────────────────────────────────
