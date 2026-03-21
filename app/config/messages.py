@@ -3,6 +3,7 @@
 
 import os
 from app.config.settings import get_settings
+MENU_HINT = "\n\n_Type *Menu* anytime to go back to main menu._"
 
 def cfg():
     return get_settings()
@@ -57,7 +58,8 @@ COURSE_ARCH = """🏛️ *BIM Training for Architecture, Structure & Interior De
   *address*
   *Profession* (Student / Working Professional)
   *Company or College
-  *Years of Experience*"""
+  *Years of Experience*
+  _Type *Menu* anytime to go back to main menu._"""
 
 COURSE_MEPF = """⚙️ *MEPF BIM Training*
 
@@ -65,7 +67,8 @@ For BIM MEP Trainings (For MEP Engineers) visit our MEP Training Partner Website
 https://bimsavvyacademy.com/courses
 
 *Please share your details in exact format:*
- Name, , Phone number , Email , Address , Profession , Company/College & Years of Experience to get fee details.*"""
+ Name, , Phone number , Email , Address , Profession , Company/College & Years of Experience to get fee details.*
+ _Type *Menu* anytime to go back to main menu._"""
 
 COURSE_WORKSHOP = """⚡ *BIM Workshops — Upcoming !*
 
@@ -74,7 +77,8 @@ COURSE_WORKSHOP = """⚡ *BIM Workshops — Upcoming !*
    *Mode:* Online 
 
 *To register, please share in exact format:*
-📝 *Name, Phone, Email , Address , Profession , Company/College , Experience *"""
+📝 *Name, Phone, Email , Address , Profession , Company/College , Experience *
+_Type *Menu* anytime to go back to main menu._"""
 
 def confirm_details_received(name: str) -> str:
     return f"""✅ Thank you, *{name}!*
@@ -216,7 +220,8 @@ PROJECT_ARCH_DETAILS = """🏛️ *Architecture & Interior Design Projects*
 
 *To get a quote, please share your details in exact format:*
 📝 *Name, Country & City, Email ,Phone Number*
-📋 *Project Description* (building type, area, requirements)"""
+📋 *Project Description* (building type, area, requirements)
+_Type *Menu* anytime to go back to main menu._"""
 
 PROJECT_BIM_DETAILS = """📐 *BIM Projects — Coordination & Modelling*
 
@@ -228,12 +233,13 @@ PROJECT_BIM_DETAILS = """📐 *BIM Projects — Coordination & Modelling*
 
 *Please share your details in the exact format *
 📝 *Name, Country & City, Email , Phone Number*
-📋 *Project Description*"""
+📋 *Project Description*
+_Type *Menu* anytime to go back to main menu._"""
 
 def project_received(name: str) -> str:
     return f"""✅ *Thank you, {name}!*
 
-Your project enquiry has been noted. Our BIM expert will review your requirements and reach out within *4–8 business hours*.
+Your project enquiry has been noted. Our BIM expert will review your requirements and reach out within *few business hours*.
 
 _Want to share project files?_
 📧 *askus@bimtrainingandprojects.com*"""
@@ -272,7 +278,8 @@ def seat_filling_alert(course: str, seats_left: int, last_date: str) -> str:
 
 Don't miss out on India's most practical BIM training!
 
-Reply *ENROLL* to secure your seat now 👇"""
+Reply *ENROLL* to secure your seat now 👇
+_Type *Menu* anytime to go back to main menu._"""
 
 # ── CERTIFICATE ───────────────────────────────────────────────────────────────
 def certificate_ready(name: str, course: str) -> str:

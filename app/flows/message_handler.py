@@ -69,7 +69,7 @@ async def handle_incoming_message(
         return await wa.send_text(
             phone,
             "To get started please type:\n\n"
-            "• *Hi* — Main menu\n"
+           "• *Hi* or *Menu* — Main menu\n"
             "• *BIM* — Course information\n"
             "• *Projects* — Project enquiries\n"
             "• *Student* — Existing student portal\n"
