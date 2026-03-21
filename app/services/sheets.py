@@ -102,6 +102,27 @@ def log_workshop_lead(data: Dict[str, Any]) -> bool:
         logger.error(f"Failed to log workshop lead | {e}")
         return False
     
+#  --- LOG PROJECTS LEAD 
+
+def log_project_lead(data: Dict[str, Any]) -> bool:
+    try:
+        ws = _get_sheet("Project Leads")
+        row = [
+            now_str(),
+            data.get("name", ""),
+            data.get("address", "") or data.get("city", ""),
+            data.get("email", ""),
+            data.get("phone", ""),
+            data.get("Project description", ""),
+            "New Lead",
+        ]
+        ws.append_row(row, value_input_option="USER_ENTERED")
+        logger.info(f"Project lead logged | phone={data.get('phone')}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to log project lead | {e}")
+        return False 
+    
 # ── LOG OTHER ENQUIRY ─────────────────────────────────────────────────────────
 def log_other_enquiry(data: Dict[str, Any]) -> bool:
     try:
