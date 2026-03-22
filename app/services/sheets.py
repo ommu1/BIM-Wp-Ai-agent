@@ -121,7 +121,8 @@ def log_project_lead(data: Dict[str, Any]) -> bool:
         logger.info(f"Project lead logged | phone={data.get('phone')}")
         return True
     except Exception as e:
-        logger.error(f"Failed to log project lead | {e}")
+        import traceback
+        logger.error(f"Failed to log project lead | {e} | {traceback.format_exc()}")
         return False 
     
 # ── LOG OTHER ENQUIRY ─────────────────────────────────────────────────────────
