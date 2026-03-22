@@ -58,8 +58,8 @@ COURSE_ARCH = """🏛️ *BIM Training for Architecture, Structure & Interior De
   *address*
   *Profession* (Student / Working Professional)
   *Company or College
-  *Years of Experience*
-  _Type *Menu* anytime to go back to main menu._"""
+  *Years of Experience*"""
+  
 
 COURSE_MEPF = """⚙️ *MEPF BIM Training*
 
