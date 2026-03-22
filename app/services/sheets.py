@@ -34,7 +34,9 @@ def generate_student_id() -> str:
     return f"#BIMP-{year}-{num}"
 
 def now_str() -> str:
-    return datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    from datetime import timezone, timedelta
+    ist = timezone(timedelta(hours=5, minutes=30))
+    return datetime.now(ist).strftime("%d-%m-%Y %H:%M:%S")
 
 
 # ── LOG BIM TRAINING LEAD (Architecture & Structure) ─────────────────────────
@@ -126,7 +128,7 @@ def log_project_lead(data: Dict[str, Any]) -> bool:
         logger.info(f"Project lead data | desc={data.get('description', 'EMPTY')} | keys={list(data.keys())}")
         ws.append_row(row, value_input_option="USER_ENTERED")
         logger.info(f"Project lead logged | phone={data.get('phone')}")
-        
+
         return True
     except Exception as e:
         import traceback

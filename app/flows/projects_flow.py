@@ -57,7 +57,7 @@ async def handle_project_details(phone: str, text: str):
         new_data["address"] = parts[1]
 
     # Always save full original text as description
-    new_data["description"] = text
+    new_data["description"] =  text or ""
 
     session_store.update(phone, data=new_data)
 
@@ -71,9 +71,10 @@ async def handle_project_details(phone: str, text: str):
             "name":         new_data.get("name", ""),
             "email":        new_data.get("email", ""),
             "address":      new_data.get("address", ""),
-            "description":  text,
+            "description":  text or "",
             "project_type": session.sub_flow or "General",
         })
+       
         await wa.send_buttons(
             phone,
             M.project_received(new_data["name"]),
