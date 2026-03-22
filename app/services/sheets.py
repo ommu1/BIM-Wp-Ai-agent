@@ -123,8 +123,10 @@ def log_project_lead(data: Dict[str, Any]) -> bool:
             data.get("Project description", ""),
             "New Lead",
         ]
+        logger.info(f"Project lead data | desc={data.get('description', 'EMPTY')} | keys={list(data.keys())}")
         ws.append_row(row, value_input_option="USER_ENTERED")
         logger.info(f"Project lead logged | phone={data.get('phone')}")
+        
         return True
     except Exception as e:
         import traceback
