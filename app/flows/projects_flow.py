@@ -61,7 +61,7 @@ async def handle_project_details(phone: str, text: str):
         new_data["description"] = ", ".join(parts[2:])
     else:
         new_data["description"] = ""
-        
+
     session_store.update(phone, data=new_data)
 
     has_name    = bool(new_data.get("name"))
@@ -74,7 +74,7 @@ async def handle_project_details(phone: str, text: str):
             "name":         new_data.get("name", ""),
             "email":        new_data.get("email", ""),
             "address":      new_data.get("address", ""),
-            "description":  text or "",
+            "description":  new_data.get("description", ""),
             "project_type": session.sub_flow or "General",
         })
        
