@@ -20,7 +20,13 @@ def _get_sheet(tab_name: str):
     s = get_settings()
     client = _get_client()
     spreadsheet = client.open_by_key(s.google_sheets_spreadsheet_id)
-    return spreadsheet.worksheet(tab_name)
+    # Find worksheet by stripping hidden characters
+    for ws in spreadsheet.worksheets():
+        if ws.title.strip() == tab_name.strip():
+            return ws
+    available = [ws.title for ws in spreadsheet.worksheets()]
+    logger.error(f"Tab '{tab_name}' not found. Available tabs: {available}")
+    raise Exception(f"Tab not found: {tab_name}")
 
 def generate_student_id() -> str:
     year = datetime.now().year
