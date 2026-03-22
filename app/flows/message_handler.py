@@ -205,6 +205,10 @@ async def handle_incoming_message(
             )
             session_store.update(phone, stage="training_menu", flow="training")
             return
+
+    if stage == "training_menu":
+        return await handle_course_selection(phone, list_id or button_id or "", text or "")
+
     if stage == "collecting_details":
         return await handle_details_collection(phone, text or "")
     if stage == "post_details":
