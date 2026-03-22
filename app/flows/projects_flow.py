@@ -56,9 +56,12 @@ async def handle_project_details(phone: str, text: str):
     if len(parts) >= 2 and not new_data.get("address"):
         new_data["address"] = parts[1]
 
-    # Always save full original text as description
-    new_data["description"] =  text or ""
-
+     # Save only parts after name and address as description
+    if len(parts) > 2:
+        new_data["description"] = ", ".join(parts[2:])
+    else:
+        new_data["description"] = ""
+        
     session_store.update(phone, data=new_data)
 
     has_name    = bool(new_data.get("name"))
