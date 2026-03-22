@@ -48,17 +48,16 @@ async def handle_project_details(phone: str, text: str):
         new_data["user_phone"] = phone_match.group(0)
         text_clean = text_clean.replace(phone_match.group(0), "")
 
-    # Split by comma — positional assignment
+     # Split by comma — positional assignment
     parts = [p.strip() for p in text_clean.split(",") if p.strip()]
 
     if len(parts) >= 1 and not new_data.get("name"):
         new_data["name"] = parts[0]
     if len(parts) >= 2 and not new_data.get("address"):
         new_data["address"] = parts[1]
-    if len(parts) > 2:
-        new_data["description"] = ", ".join(parts[2:])
-    elif len(text or "") > 20 and not new_data.get("description"):
-        new_data["description"] = text
+
+    # Always save full original text as description
+    new_data["description"] = text
 
     session_store.update(phone, data=new_data)
 
@@ -68,11 +67,11 @@ async def handle_project_details(phone: str, text: str):
 
     if has_name and (has_email or has_address):
         await asyncio.to_thread(sheets.log_project_lead, {
-            "phone":       phone,
-            "name":        new_data.get("name", ""),
-            "email":       new_data.get("email", ""),
-            "address":     new_data.get("address", ""),
-             "description":  new_data.get("description", "") or text,
+            "phone":        phone,
+            "name":         new_data.get("name", ""),
+            "email":        new_data.get("email", ""),
+            "address":      new_data.get("address", ""),
+            "description":  text,
             "project_type": session.sub_flow or "General",
         })
         await wa.send_buttons(
