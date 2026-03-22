@@ -72,7 +72,7 @@ async def handle_project_details(phone: str, text: str):
             "name":        new_data.get("name", ""),
             "email":       new_data.get("email", ""),
             "address":     new_data.get("address", ""),
-            "description": new_data.get("description", ""),
+             "description":  new_data.get("description", "") or text,
             "project_type": session.sub_flow or "General",
         })
         await wa.send_buttons(
