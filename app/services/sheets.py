@@ -142,9 +142,9 @@ def log_other_enquiry(data: Dict[str, Any]) -> bool:
         row = [
             now_str(),
             data.get("name", ""),
-            data.get("phone", ""),
-            data.get("email", ""),
             data.get("address", ""),
+            data.get("email", ""),
+            data.get("phone", ""),
             data.get("description", ""),
             "New Enquiry",
         ]

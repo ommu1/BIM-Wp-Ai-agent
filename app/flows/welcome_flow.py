@@ -35,9 +35,13 @@ async def route_from_main_menu(phone: str, button_id: str, text: str):
     if button_id == "other" or any(w in lower for w in ["other", "enquiry", "callback", "general"]):
         await wa.send_text(
             phone,
-            "*Thank you for reaching out!* 🙏\n\n"
             "Please share your details and our team will call you back:\n\n"
-            "_Name, Phone, Email, City/Country_\n\n"
+             "*Format:*\n"
+            "_Name, Phone, Email, City/Country, Description_\n\n"
+            "*Example:*\n"
+            "_Rahul Sharma, 9876543210, rahul@gmail.com, Mumbai India, I want to know about your services_\n\n"
+            
+            "_Type *Menu* anytime to go back to main menu._"
         )
         session_store.update(phone, stage="other_enquiry")
         return

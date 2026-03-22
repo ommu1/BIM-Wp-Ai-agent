@@ -158,6 +158,17 @@ async def handle_incoming_message(
             address = parts[1]
         if len(parts) > 2:
             description = ", ".join(parts[2:])
+        else:
+            description = ""
+
+        from app.services import sheets
+        await asyncio.to_thread(sheets.log_other_enquiry, {
+            "phone":       phone,
+            "name":        name,
+            "email":       email,
+            "address":     address,
+            "description": description,
+        })
 
         from app.services import sheets
         await asyncio.to_thread(sheets.log_other_enquiry, {
