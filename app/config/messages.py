@@ -219,8 +219,8 @@ PROJECT_ARCH_DETAILS = """🏛️ *Architecture & Interior Design Projects*
 ✅ Rendering & 3D Visualization
 
 *To get a quote, please share your details in exact format:*
-📝 *Name, Country & City, Email ,Phone Number*
-📋 *Project Description* (building type, area, requirements)
+📝 _Name, Country & City, Email ,Phone Number , Project Description (building type, area, requirements)_
+
 _Type *Menu* anytime to go back to main menu._"""
 
 PROJECT_BIM_DETAILS = """📐 *BIM Projects — Coordination & Modelling*
@@ -232,8 +232,8 @@ PROJECT_BIM_DETAILS = """📐 *BIM Projects — Coordination & Modelling*
 ✅ LOD 100–400 modelling
 
 *Please share your details in the exact format *
-📝 *Name, Country & City, Email , Phone Number*
-📋 *Project Description*
+📝 _Name, Country & City, Email ,Phone Number , Project Description (building type, area, requirements)_
+
 _Type *Menu* anytime to go back to main menu._"""
 
 def project_received(name: str) -> str:
