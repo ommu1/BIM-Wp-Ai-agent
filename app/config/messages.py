@@ -68,6 +68,7 @@ https://bimsavvyacademy.com/courses
 
 *Please share your details in exact format:*
  Name, , Phone number , Email , Address , Profession , Company/College & Years of Experience to get fee details.*
+ 
  _Type *Menu* anytime to go back to main menu._"""
 
 COURSE_WORKSHOP = """⚡ *BIM Workshops — Upcoming !*

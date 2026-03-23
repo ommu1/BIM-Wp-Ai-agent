@@ -31,8 +31,9 @@ async def handle_course_selection(phone: str, list_id: str, text: str):
             phone,
             M.COURSE_ARCH,
             [
-                {"id": "brochure",   "label": "Download Brochure"},
-                {"id": "enroll_now", "label": "Enroll Now"},
+                {"id": "brochure",    "label": "📄 Download Brochure"},
+                {"id": "curriculum",  "label": "📋 Course Curriculum"},
+                {"id": "enroll_now",  "label": "✅ Enroll Now"},
                 {"id": "back_main",  "label": "Back to Menu"},
             ]
         )
@@ -69,6 +70,8 @@ async def handle_details_collection(phone: str, text: str):
     lower_text = (text or "").lower()
     if text == "Download Brochure" or "brochure" in lower_text:
         return await send_brochure(phone)
+    if text == "Course Curriculum" or "curriculum" in lower_text:
+        return await send_curriculum(phone)  
     if text == "Enroll Now" or "enroll" in lower_text:
         return await start_enrollment(phone)
     if text == "Back to Menu" or "back" in lower_text:
@@ -159,6 +162,9 @@ async def handle_post_details(phone: str, button_id: str, text: str):
 
     if button_id == "brochure" or "brochure" in lower:
         return await send_brochure(phone)
+    
+    if button_id == "curriculum" or "curriculum" in lower:
+        return await send_curriculum(phone)
 
     if button_id == "ask_human" or any(w in lower for w in ["human", "trainer", "call", "talk"]):
         await wa.send_text(phone, M.human_handoff())
@@ -249,7 +255,27 @@ async def handle_utr_submission(phone: str, text: str):
             "Thank you! 📸 Our team will verify your payment within *2 hours* and send your Student ID.\n\n"
             "_For queries: +91 72178 22883_ 🙏"
         )
-    session_store.update(phone, stage="payment_submitted", awaiting_utr=False)
+    session_store.update(phone, stage="payment_submitted", awaiting_utr=False) 
+
+    # ── Send Curriculum ──────────────────────────────────────────────────────────
+async def send_curriculum(phone: str):
+    from app.config.settings import get_settings
+    s = get_settings()
+    pdf_url = s.curriculum_pdf_url
+
+    if pdf_url:
+        await wa.send_document(
+            phone,
+            pdf_url,
+            "BIM_Course_Curriculum.pdf",
+            "BIM Training & Projects — Course Curriculum\n\nReply ENROLL to register!"
+        )
+    else:
+        config = await asyncio.to_thread(sheets.get_admin_config)
+        url = config.get("curriculum_url", "https://www.bimtrainingandprojects.com/curriculum")
+        await wa.send_text(phone, f"Course Curriculum:\n\n{url}\n\nReply ENROLL to start enrollment")
+
+    session_store.update(phone, stage="post_curriculum")
 
 
 # ── Send Brochure ─────────────────────────────────────────────────────────────
