@@ -36,7 +36,7 @@ class Settings(BaseSettings):
     #pdf
     brochure_pdf_url: str = "https://www.bimtrainingandprojects.com/_files/ugd/215925_04d6bd8602ba42b6891b92b553915502.pdf"
     curriculum_pdf_url: str = "https://drive.google.com/uc?export=download&id=1JzkLlFIiGNQdEkoh-cigF6kFtHwR3HgH"
-
+    
     class Config:
         env_file = ".env"
         case_sensitive = False
