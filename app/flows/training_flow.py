@@ -278,7 +278,7 @@ async def start_enrollment(phone: str):
             "To know more visit:\n"
             "www.bimtrainingandprojects.com/workshops\n\n"
             "For queries, contact us at:\n"
-            📧 *askus@bimtrainingandprojects.com* 
+            "📧 *askus@bimtrainingandprojects.com*"
          )
         
         await asyncio.to_thread(sheets.log_workshop_lead, {
