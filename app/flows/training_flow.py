@@ -186,9 +186,16 @@ async def handle_post_details(phone: str, button_id: str, text: str):
         "📧 *askus@bimtrainingandprojects.com*"
     )
 
-# ── ENROLLMENT: Show fee + send QR ───────────────────────────────────────────
-async def start_enrollment(phone: str):
-    session = session_store.get_or_create(phone)
+# Paid course — send enrollment confirmation + payment PDF
+    await wa.send_text(phone, M.enrollment_confirm(name, course["name"], course["fee"], course["batch"]))
+    await wa.send_document(
+        phone,
+        "https://www.bimtrainingandprojects.com/_files/ugd/215925_6b0b247a053346399aea90b768e7e78d.pdf",
+        "BIM_Payment_Details.pdf",
+        "📲 Please download this PDF for payment details including UPI QR code and bank transfer details.\n\n"
+        "After payment reply with your *UTR number* or send a *payment screenshot*. 🙏"
+    )
+    session_store.update(phone, stage="awaiting_utr", awaiting_utr=True)
     config  = await asyncio.to_thread(sheets.get_admin_config)
 
     course_map = {

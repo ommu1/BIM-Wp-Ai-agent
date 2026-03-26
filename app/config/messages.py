@@ -74,11 +74,14 @@ https://bimsavvyacademy.com/courses
 COURSE_WORKSHOP = """⚡ *BIM Workshops — Upcoming !*
 
    Intensive, focused sessions on specific BIM topics
-   *Fee:* 
    *Mode:* Online 
+
+   To know more about our upcoming workshops and to register, please visit:
+🔗 https://www.bimtrainingandprojects.com/workshops
 
 *To register, please share in exact format:*
 📝 *Name, Phone, Email , Address , Profession , Company/College , Experience *
+
 _Type *Menu* anytime to go back to main menu._"""
 
 def confirm_details_received(name: str) -> str:
@@ -96,20 +99,17 @@ def enrollment_confirm(name: str, course: str, fee: str, batch_date: str) -> str
 
 Here are your enrollment details:
 
-📚 *Course:* {course}
-📅 *Batch Start:* {batch_date}
-💰 *Course Fee:* ₹{fee}
+*Course:* {course}
+*Batch Start:* {batch_date}
 
-*Payment Options:*
-💳 Full Payment: ₹{fee}
-📆 Installments available (ask us)
-
-_After payment, reply with your *UTR number* or send a *payment screenshot*._
-_We'll confirm within 2 hours._
+Please download the payment details PDF below.
+After payment reply with your *UTR number* or send a *payment screenshot*.
 
 ⚠️ By enrolling, you agree to our:
 📄 Privacy Policy: {s.privacy_policy_url}
-📄 Terms: {s.terms_url}"""
+📄 Terms: {s.terms_url}
+
+_Type *Menu* anytime to go back to main menu._"""
 
 def qr_caption() -> str:
     s = get_settings()

@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     port: int = 8000
 
     #pdf
-    brochure_pdf_url: str = "https://www.bimtrainingandprojects.com/_files/ugd/215925_04d6bd8602ba42b6891b92b553915502.pdf"
+    brochure_pdf_url: str = "https://www.bimtrainingandprojects.com/_files/ugd/215925_96e91b5b63994d5686f101836dd376b7.pdf"
     curriculum_pdf_url: str = "https://drive.google.com/file/d/1JzkLlFIiGNQdEkoh-cigF6kFtHwR3HgH/view?usp=sharing"
     
     class Config:
