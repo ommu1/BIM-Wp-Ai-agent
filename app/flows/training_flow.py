@@ -77,7 +77,7 @@ async def handle_details_collection(phone: str, text: str):
         from app.flows.welcome_flow import handle_welcome
         session_store.reset(phone)
         return await handle_welcome(phone)
-
+    
     import re
     new_data = dict(session.data)
 
@@ -89,25 +89,64 @@ async def handle_details_collection(phone: str, text: str):
     else:
         text_clean = text
 
-    # Extract phone (10 digits)
-    phone_match = re.search(r'\b\d{10}\b', text_clean)
+    # Extract phone (10 or 11 digits)
+    phone_match = re.search(r'\b\d{10,11}\b', text_clean)
     if phone_match:
         new_data["user_phone"] = phone_match.group(0)
         text_clean = text_clean.replace(phone_match.group(0), "")
 
-    # Split by comma — positional assignment
-    parts = [p.strip() for p in text_clean.split(",") if p.strip()]
+    # Extract experience (number + year or just a single digit)
+    exp_match = re.search(r'\b(\d+)\s*(?:year|yr|years|yrs)?\b', text_clean, re.IGNORECASE)
 
-    if len(parts) >= 1 and not new_data.get("name"):
-        new_data["name"] = parts[0]
-    if len(parts) >= 2 and not new_data.get("address"):
-        new_data["address"] = parts[1]
-    if len(parts) >= 3 and not new_data.get("profession"):
-        new_data["profession"] = parts[2]
-    if len(parts) >= 4 and not new_data.get("college"):
-        new_data["college"] = parts[3]
-    if len(parts) >= 5 and not new_data.get("experience"):
-        new_data["experience"] = parts[4]
+    # Split by BOTH comma AND newline
+    parts = [p.strip() for p in re.split(r'[,\n]', text_clean) if p.strip()]
+
+    unassigned = []
+    for part in parts:
+        low = part.lower()
+
+        # Skip very short parts
+        if len(part) < 2:
+            continue
+
+        # Detect experience
+        if re.search(r'^\d+$', part.strip()) or re.search(r'\d+\s*(year|yr|years|yrs)', low):
+            if not new_data.get("experience"):
+                new_data["experience"] = part.strip()
+
+        # Detect profession
+        elif any(w in low for w in ["student", "working professional", "professional", "freelancer",
+                                     "architect", "engineer", "designer", "fresher", "employed"]):
+            if not new_data.get("profession"):
+                new_data["profession"] = part.strip()
+
+        # Detect college/company
+        elif any(w in low for w in ["university", "college", "institute", "iit", "nit", "bits",
+                                     "pvt", "ltd", "technologies", "solutions", "school", "academy",
+                                     "galgotias", "amity", "bennett", "sharda", "noida"]):
+            if not new_data.get("college"):
+                new_data["college"] = part.strip()
+
+        # Detect address (city/country keywords)
+        elif any(w in low for w in ["india", "noida", "delhi", "mumbai", "bangalore", "bengaluru",
+                                     "hyderabad", "chennai", "pune", "kolkata", "dubai", "uk", "usa",
+                                     "canada", "australia", "singapore", "nepal", "uae", "london",
+                                     "greater noida", "gurgaon", "gurugram", "faridabad", "lucknow",
+                                     "jaipur", "ahmedabad", "surat", "bhopal", "indore"]):
+            if not new_data.get("address"):
+                new_data["address"] = part.strip()
+
+        else:
+            unassigned.append(part.strip())
+
+    # First unassigned = name, second = address fallback
+    for part in unassigned:
+        if not new_data.get("name") and len(part.split()) <= 5:
+            new_data["name"] = part.strip()
+        elif not new_data.get("address"):
+            new_data["address"] = part.strip()
+        elif not new_data.get("college"):
+            new_data["college"] = part.strip()
 
     new_data["description"] = text
 
@@ -238,8 +277,10 @@ async def start_enrollment(phone: str):
             "Our team will contact you with the workshop link and schedule shortly.\n\n"
             "To know more visit:\n"
             "www.bimtrainingandprojects.com/workshops\n\n"
-            "📞 *+91 72178 22883*"
-        )
+            "For queries, contact us at:\n"
+            📧 *askus@bimtrainingandprojects.com* 
+         )
+        
         await asyncio.to_thread(sheets.log_workshop_lead, {
             "phone": phone, **session.data,
         })

@@ -130,7 +130,7 @@ UTR: *{utr}*
 Our team will verify and confirm within *2 hours*.
 You'll receive your *Student ID* and welcome details once verified.
 
-_If you don't hear within 2 hours, call: *+91 72178 22883*_"""
+_If you don't hear within 2 hours, call: *+*_"""
 
 def student_id_welcome(name: str, student_id: str, course: str, batch_date: str) -> str:
     return f"""🎊 *Welcome aboard, {name}!* 🏆
@@ -309,9 +309,8 @@ def human_handoff() -> str:
     s = get_settings()
     return f"""I understand! Let me connect you with our expert trainer. 🙏
 
-They will reach out within *2–4 hours* (Mon–Sat, 9AM–7PM IST).
+They will reach out within *few hours* (Mon–Sat, 9AM–7PM IST).
 
 For urgent queries:
-📞 *+91 72178 22883*
 📧 *askus@bimtrainingandprojects.com*
 🌐 *{s.website_url}*"""

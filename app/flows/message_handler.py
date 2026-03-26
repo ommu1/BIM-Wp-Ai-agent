@@ -91,7 +91,7 @@ async def handle_incoming_message(
     if lower in ("help", "support", "?"):
         return await wa.send_text(phone,
             f"🆘 *Need help?*\n\n"
-            f"📞 *+91 72178 22883*\n"
+            f"Our team is here to assist you! You can reach us at:\n\n"
             f"📧 *askus@bimtrainingandprojects.com*\n"
             f"🌐 *{s.website_url}*\n\n"
             "_Type *MENU* to go back to the main menu._"
@@ -182,8 +182,7 @@ async def handle_incoming_message(
         await wa.send_text(
             phone,
             f"*Thank you{', ' + name if name else ''}!* ✅\n\n"
-            "Your details have been noted. Our team will call you back within *2-4 hours*.\n\n"
-            "📞 *+91 72178 22883*\n"
+            "Your details have been noted. Our team will call you back within * Few hours*.\n\n"
             "📧 *askus@bimtrainingandprojects.com*"
         )
         session_store.update(phone, stage="main_menu")
@@ -221,7 +220,7 @@ async def handle_incoming_message(
         return await wa.send_text(phone,
             "⏳ *Payment verification in progress.*\n\n"
             "You'll receive your Student ID once confirmed.\n\n"
-            "Questions? Call *+91 72178 22883* 🙏"
+            "Questions? Call *+* 🙏"
         )
 
     # Projects
@@ -243,7 +242,7 @@ async def handle_incoming_message(
     # Human requested
     if stage == "human_requested":
         return await wa.send_text(phone,
-            "_Our team has been notified and will reach out soon._ 🙏\n\nUrgent: *+91 72178 22883*"
+            "_Our team has been notified and will reach out soon._ 🙏\n\nUrgent: *+*"
         )
 
     # ── CROSS-FLOW BUTTON IDs ──────────────────────────────────────────────
@@ -263,7 +262,7 @@ async def handle_cross_flow(phone: str, btn: str, text: str, session):
         "review_linkedin":  lambda: wa.send_text(phone, "💼 *Connect on LinkedIn:*\nhttps://linkedin.com/company/bim-training-and-projects\n\nThank you! 🙏"),
         "review_skip":      lambda: wa.send_text(phone, "No problem! Feel free to reach out anytime. 🙏"),
         "paid_utr":         lambda: handle_utr_submission(phone, text),
-        "contact_us":       lambda: wa.send_text(phone, f"📞 *Contact Us*\n\n+91 72178 22883\naskus@bimtrainingandprojects.com"),
+        "contact_us":       lambda: wa.send_text(phone, f" *Contact Us*\n\n+\naskus@bimtrainingandprojects.com"),
         "ask_human":        None,  # handled below
     }
 
