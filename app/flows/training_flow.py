@@ -306,14 +306,10 @@ async def send_brochure(phone: str):
 
 # ── Send Curriculum ───────────────────────────────────────────────────────────
 async def send_curriculum(phone: str):
-    from app.config.settings import get_settings
-    s = get_settings()
-
-    await wa.send_text(
+    await wa.send_document(
         phone,
-        "*BIM Training — Course Curriculum*\n\n"
-        "Click the link below to view and download the full course curriculum:\n\n"
-        "🔗 https://www.bimtrainingandprojects.com/bimtraining\n\n"
-        "_Type *Menu* anytime to go back to main menu._"
+        "https://www.bimtrainingandprojects.com/_files/ugd/215925_a99fa611909e49ce8860c6b11232e88c.pdf",
+        "BIM_Course_Curriculum.pdf",
+        "BIM Training & Projects — Course Curriculum\n\nReply ENROLL to register!"
     )
     session_store.update(phone, stage="post_brochure")
