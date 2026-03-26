@@ -118,6 +118,6 @@ async def handle_post_project(phone: str, button_id: str, text: str):
             phone,
             "Thank you for reaching out! 🙏\n\n"
             "Our team will contact you within *few hours*.\n\n"
-            "📞 *+91 72178 22883*\n"
+                "For urgent queries, please contact us at:\n"
             "📧 *askus@bimtrainingandprojects.com*"
         )
