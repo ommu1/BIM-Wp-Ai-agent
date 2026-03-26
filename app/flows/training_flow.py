@@ -2,7 +2,6 @@
 # Full BIM training enquiry → course selection → detail collection → enrollment → payment
 
 import asyncio
-from pydoc import text
 from app.services import whatsapp as wa
 from app.services import sheets, ai as ai_svc
 from app.config import messages as M
@@ -10,7 +9,7 @@ from app.utils.session_store import session_store
 from app.utils.logger import logger
 
 
-# ── STEP 1: Show course list ──────────────────────────────────────────────────
+# ── STEP 1: Show existing student check ──────────────────────────────────────
 async def start_training_flow(phone: str):
     await wa.send_buttons(
         phone,
@@ -22,6 +21,7 @@ async def start_training_flow(phone: str):
     )
     session_store.update(phone, stage="training_check", flow="training")
 
+
 # ── STEP 2: Handle course selection ──────────────────────────────────────────
 async def handle_course_selection(phone: str, list_id: str, text: str):
     lower = (text or "").lower()
@@ -31,10 +31,9 @@ async def handle_course_selection(phone: str, list_id: str, text: str):
             phone,
             M.COURSE_ARCH,
             [
-                {"id": "brochure",    "label": "📄 Download Brochure"},
-                {"id": "curriculum",  "label": "📋 Course Curriculum"},
-                {"id": "enroll_now",  "label": "✅ Enroll Now"},
-                {"id": "back_main",  "label": "Back to Menu"},
+                {"id": "brochure",   "label": "📄 Download Brochure"},
+                {"id": "curriculum", "label": "📋 Course Curriculum"},
+                {"id": "enroll_now", "label": "✅ Enroll Now"},
             ]
         )
         session_store.update(phone, stage="collecting_details", sub_flow="arch_bim")
@@ -57,7 +56,7 @@ async def handle_course_selection(phone: str, list_id: str, text: str):
     else:
         await wa.send_text(
             phone,
-            "🙏 Please select a course from the list above.\n\n"
+            "Please select a course from the list above.\n\n"
             "Or type *Menu* to go back to the main menu."
         )
 
@@ -66,15 +65,15 @@ async def handle_course_selection(phone: str, list_id: str, text: str):
 async def handle_details_collection(phone: str, text: str):
     session = session_store.get_or_create(phone)
 
-    # Handle button taps first before extracting details
+    # Handle button taps first
     lower_text = (text or "").lower()
     if text == "Download Brochure" or "brochure" in lower_text:
         return await send_brochure(phone)
     if text == "Course Curriculum" or "curriculum" in lower_text:
-        return await send_curriculum(phone)  
+        return await send_curriculum(phone)
     if text == "Enroll Now" or "enroll" in lower_text:
         return await start_enrollment(phone)
-    if text == "Back to Menu" or "back" in lower_text:
+    if text == "Back to Menu" or lower_text == "back":
         from app.flows.welcome_flow import handle_welcome
         session_store.reset(phone)
         return await handle_welcome(phone)
@@ -99,8 +98,6 @@ async def handle_details_collection(phone: str, text: str):
     # Split by comma — positional assignment
     parts = [p.strip() for p in text_clean.split(",") if p.strip()]
 
-    # Assign positionally — matches the format we asked:
-    # Name, Address, Profession, College, Experience
     if len(parts) >= 1 and not new_data.get("name"):
         new_data["name"] = parts[0]
     if len(parts) >= 2 and not new_data.get("address"):
@@ -114,14 +111,13 @@ async def handle_details_collection(phone: str, text: str):
 
     new_data["description"] = text
 
+    session_store.update(phone, data=new_data)
 
     has_name    = bool(new_data.get("name"))
     has_email   = bool(new_data.get("email"))
     has_address = bool(new_data.get("address"))
 
     if has_name and (has_email or has_address):
-
-        # Enough info — log to sheet
         if session.sub_flow == "workshop":
             await asyncio.to_thread(sheets.log_workshop_lead, {
                 "phone": phone, **new_data,
@@ -135,23 +131,38 @@ async def handle_details_collection(phone: str, text: str):
                 "phone": phone, **new_data,
                 "course_interest": "Architecture & Structure",
             })
-        await wa.send_buttons(
-            phone,
-            M.confirm_details_received(new_data["name"]),
-            [
-                {"id": "enroll_now", "label": "✅ Enroll Now"},
-                {"id": "brochure",   "label": "📄 Get Brochure"},
-                {"id": "ask_human",  "label": "📞 Talk to Trainer"},
-            ],
-        )
+
+        if session.sub_flow == "workshop":
+            await wa.send_buttons(
+                phone,
+                M.confirm_details_received(new_data["name"]),
+                [
+                    {"id": "brochure",   "label": "📄 Get Brochure"},
+                    {"id": "ask_human",  "label": "📞 Talk to Trainer"},
+                    {"id": "back_main",  "label": "🏠 Main Menu"},
+                ],
+            )
+        else:
+            await wa.send_buttons(
+                phone,
+                M.confirm_details_received(new_data["name"]),
+                [
+                    {"id": "enroll_now", "label": "✅ Enroll Now"},
+                    {"id": "brochure",   "label": "📄 Get Brochure"},
+                    {"id": "ask_human",  "label": "📞 Talk to Trainer"},
+                ],
+            )
         session_store.update(phone, stage="post_details")
     else:
-        await wa.send_text(phone,
+        await wa.send_text(
+            phone,
             "Please share your details in this format:\n\n"
             "_Name, Phone, Email, City/Country, Profession, College/Company, Experience_\n\n"
             "*Example:*\n"
             "Rahul Sharma, 9876543210, rahul@gmail.com, Mumbai India, Student, IIT Bombay, 0 years"
         )
+
+
 # ── STEP 4: Post-details button handling ─────────────────────────────────────
 async def handle_post_details(phone: str, button_id: str, text: str):
     lower = (text or "").lower()
@@ -162,7 +173,7 @@ async def handle_post_details(phone: str, button_id: str, text: str):
 
     if button_id == "brochure" or "brochure" in lower:
         return await send_brochure(phone)
-    
+
     if button_id == "curriculum" or "curriculum" in lower:
         return await send_curriculum(phone)
 
@@ -170,6 +181,11 @@ async def handle_post_details(phone: str, button_id: str, text: str):
         await wa.send_text(phone, M.human_handoff())
         session_store.update(phone, stage="human_requested", human_mode=True)
         return
+
+    if button_id == "back_main" or "back" in lower or "menu" in lower:
+        from app.flows.welcome_flow import handle_welcome
+        session_store.reset(phone)
+        return await handle_welcome(phone)
 
     if any(w in lower for w in ["discount", "offer", "price", "reduce", "less"]):
         await wa.send_text(phone,
@@ -186,16 +202,10 @@ async def handle_post_details(phone: str, button_id: str, text: str):
         "📧 *askus@bimtrainingandprojects.com*"
     )
 
-# Paid course — send enrollment confirmation + payment PDF
-    await wa.send_text(phone, M.enrollment_confirm(name, course["name"], course["fee"], course["batch"]))
-    await wa.send_document(
-        phone,
-        "https://www.bimtrainingandprojects.com/_files/ugd/215925_6b0b247a053346399aea90b768e7e78d.pdf",
-        "BIM_Payment_Details.pdf",
-        "📲 Please download this PDF for payment details including UPI QR code and bank transfer details.\n\n"
-        "After payment reply with your *UTR number* or send a *payment screenshot*. 🙏"
-    )
-    session_store.update(phone, stage="awaiting_utr", awaiting_utr=True)
+
+# ── ENROLLMENT: Show fee + send payment PDF ───────────────────────────────────
+async def start_enrollment(phone: str):
+    session = session_store.get_or_create(phone)
     config  = await asyncio.to_thread(sheets.get_admin_config)
 
     course_map = {
@@ -210,7 +220,7 @@ async def handle_post_details(phone: str, button_id: str, text: str):
             "batch": config.get("mepf_batch", "Contact us for next batch"),
         },
         "workshop": {
-            "name":  "BIM Workshop (Free)",
+            "name":  "BIM Workshop",
             "fee":   "0",
             "batch": config.get("workshop_date", "Coming soon"),
         },
@@ -223,10 +233,12 @@ async def handle_post_details(phone: str, button_id: str, text: str):
 
     if course["fee"] == "0":
         await wa.send_text(phone,
-            f"🎉 *{name}, you're registered for the FREE BIM Workshop!*\n\n"
-            f"📅 *Date:* {course['batch']}\n\n"
-            "_We'll send the Zoom link to this number before the event._\n\n"
-            "You're all set! See you there 🎓"
+            f"Thank you, *{name}!*\n\n"
+            "We have noted your interest in the BIM Workshop.\n\n"
+            "Our team will contact you with the workshop link and schedule shortly.\n\n"
+            "To know more visit:\n"
+            "www.bimtrainingandprojects.com/workshops\n\n"
+            "📞 *+91 72178 22883*"
         )
         await asyncio.to_thread(sheets.log_workshop_lead, {
             "phone": phone, **session.data,
@@ -234,9 +246,15 @@ async def handle_post_details(phone: str, button_id: str, text: str):
         session_store.update(phone, stage="post_enrollment")
         return
 
-    # Paid course — send details + QR
+    # Paid course — send confirmation + payment PDF
     await wa.send_text(phone, M.enrollment_confirm(name, course["name"], course["fee"], course["batch"]))
-    await wa.send_image(phone, session_store.get_or_create(phone).__class__.__module__ and __import__('app.config.settings', fromlist=['get_settings']).get_settings().upi_qr_image_url, M.qr_caption())
+    await wa.send_document(
+        phone,
+        "https://www.bimtrainingandprojects.com/_files/ugd/215925_6b0b247a053346399aea90b768e7e78d.pdf",
+        "BIM_Payment_Details.pdf",
+        "Please download this PDF for payment details including UPI QR code and bank transfer details.\n\n"
+        "After payment reply with your *UTR number* or send a *payment screenshot*. 🙏"
+    )
     session_store.update(phone, stage="awaiting_utr", awaiting_utr=True)
 
 
@@ -262,27 +280,7 @@ async def handle_utr_submission(phone: str, text: str):
             "Thank you! 📸 Our team will verify your payment within *2 hours* and send your Student ID.\n\n"
             "_For queries: +91 72178 22883_ 🙏"
         )
-    session_store.update(phone, stage="payment_submitted", awaiting_utr=False) 
-
-    # ── Send Curriculum ──────────────────────────────────────────────────────────
-async def send_curriculum(phone: str):
-    from app.config.settings import get_settings
-    s = get_settings()
-    pdf_url = s.curriculum_pdf_url
-
-    if pdf_url:
-        await wa.send_document(
-            phone,
-            pdf_url,
-            "BIM_Course_Curriculum.pdf",
-            "BIM Training & Projects — Course Curriculum\n\nReply ENROLL to register!"
-        )
-    else:
-        config = await asyncio.to_thread(sheets.get_admin_config)
-        url = config.get("curriculum_url", "https://www.bimtrainingandprojects.com/curriculum")
-        await wa.send_text(phone, f"Course Curriculum:\n\n{url}\n\nReply ENROLL to start enrollment")
-
-    session_store.update(phone, stage="post_curriculum")
+    session_store.update(phone, stage="payment_submitted", awaiting_utr=False)
 
 
 # ── Send Brochure ─────────────────────────────────────────────────────────────
@@ -299,8 +297,23 @@ async def send_brochure(phone: str):
             "BIM Training & Projects — Course Brochure\n\nReply ENROLL to register!"
         )
     else:
-        config = await asyncio.to_thread(sheets.get_admin_config)
-        url = config.get("brochure_url", "https://www.bimtrainingandprojects.com/bimtraining")
-        await wa.send_text(phone, f"Course Brochure:\n\n{url}\n\nReply ENROLL to start enrollment")
+        await wa.send_text(phone,
+            "📄 Course Brochure:\n\nhttps://www.bimtrainingandprojects.com/bimtraining\n\n"
+            "Reply ENROLL to start enrollment"
+        )
+    session_store.update(phone, stage="post_brochure")
 
+
+# ── Send Curriculum ───────────────────────────────────────────────────────────
+async def send_curriculum(phone: str):
+    from app.config.settings import get_settings
+    s = get_settings()
+
+    await wa.send_text(
+        phone,
+        "*BIM Training — Course Curriculum*\n\n"
+        "Click the link below to view and download the full course curriculum:\n\n"
+        "🔗 https://www.bimtrainingandprojects.com/bimtraining\n\n"
+        "_Type *Menu* anytime to go back to main menu._"
+    )
     session_store.update(phone, stage="post_brochure")
