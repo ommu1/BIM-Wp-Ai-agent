@@ -87,7 +87,7 @@ _Type *Menu* anytime to go back to main menu._"""
 def confirm_details_received(name: str) -> str:
     return f"""✅ Thank you, *{name}!*
 
-Your enquiry has been noted. Our expert trainer will call or WhatsApp you within *2–4 hours* with complete fee and batch details.
+Your enquiry has been noted. Our expert trainer will call or WhatsApp you within *few hours* with complete fee and batch details.
 
 📋 Download our course brochure in the meantime!
 

@@ -197,8 +197,8 @@ async def handle_post_details(phone: str, button_id: str, text: str):
     await wa.send_text(
         phone,
         "Thank you for your message! 🙏\n\n"
-        "Our team will get back to you within *2-4 hours*.\n\n"
-        "📞 *+91 72178 22883*\n"
+        "Our team will get back to you within *Few hours*.\n\n"
+            "For urgent queries, please contact us at:\n"
         "📧 *askus@bimtrainingandprojects.com*"
     )
 
