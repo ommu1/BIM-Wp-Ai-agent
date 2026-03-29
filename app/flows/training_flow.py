@@ -2,6 +2,7 @@
 # Full BIM training enquiry → course selection → detail collection → enrollment → payment
 
 import asyncio
+from re import Match
 from app.services import whatsapp as wa
 from app.services import sheets, ai as ai_svc
 from app.config import messages as M
@@ -96,7 +97,7 @@ async def handle_details_collection(phone: str, text: str):
         text_clean = text_clean.replace(phone_match.group(0), "")
 
     # Extract experience (number + year or just a single digit)
-    exp_match = re.search(r'\b(\d+)\s*(?:year|yr|years|yrs)?\b', text_clean, re.IGNORECASE)
+    exp_match: Match[str] | None = re.search(r'\b(\d+)\s*(?:year|yr|years|yrs)?\b', text_clean, re.IGNORECASE)
 
     # Split by BOTH comma AND newline
     parts = [p.strip() for p in re.split(r'[,\n]', text_clean) if p.strip()]
@@ -108,6 +109,7 @@ async def handle_details_collection(phone: str, text: str):
         # Skip very short parts
         if len(part) < 2:
             continue
+
 
         # Detect experience
         if re.search(r'^\d+$', part.strip()) or re.search(r'\d+\s*(year|yr|years|yrs)', low):
@@ -146,7 +148,21 @@ async def handle_details_collection(phone: str, text: str):
         elif not new_data.get("address"):
             new_data["address"] = part.strip()
         elif not new_data.get("college"):
-            new_data["college"] = part.strip()
+            new_data["college"] = part.strip() 
+
+            # Step 4 — Assign purely by position
+    # Format we asked: Name, Address, Profession, College, Experience
+    if len(parts) >= 1 and not new_data.get("name"):
+        new_data["name"] = parts[0]
+    if len(parts) >= 2 and not new_data.get("address"):
+        new_data["address"] = parts[1]
+    if len(parts) >= 3 and not new_data.get("profession"):
+        new_data["profession"] = parts[2]
+    if len(parts) >= 4 and not new_data.get("college"):
+        new_data["college"] = parts[3]
+    if len(parts) >= 5 and not new_data.get("experience"):
+        new_data["experience"] = parts[4]
+
 
     new_data["description"] = text
 
