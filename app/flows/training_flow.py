@@ -125,7 +125,9 @@ async def handle_details_collection(phone: str, text: str):
         # Detect college/company
         elif any(w in low for w in ["university", "college", "institute", "iit", "nit", "bits",
                                      "pvt", "ltd", "technologies", "solutions", "school", "academy",
-                                     "galgotias", "amity", "bennett", "sharda", "noida"]):
+                                     "galgotias", "amity", "bennett", "sharda", "inc", "corp", "group",
+                                     "enterprises", "consultants", "services", "systems", "software",
+                                     "engineering", "construction", "developers", "studios"]):
             if not new_data.get("college"):
                 new_data["college"] = part.strip()
 
