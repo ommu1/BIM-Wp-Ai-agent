@@ -13,8 +13,8 @@ GREETING = """ *Namaste! Welcome to BIM Training & Projects!*
 
 We specialize in:
 - BIM Training 
-- Projects
-- Others 
+- BIM Projects
+- ARCHITECTURE & INTERIOR DESIGN Projects 
 
 Please visit our website for more information:
 www.bimtrainingandprojects.com
@@ -23,7 +23,7 @@ www.bimtrainingandprojects.com
 *How can I help you today?*"""
 
 GREETING_BUTTONS = [
-    {"id": "training",  "label": "🎓 BIM Training / Workshop"},
+    {"id": "training",  "label": "🎓 BIM Training"},
     {"id": "projects",  "label": "🏗️ Projects"},
     {"id": "other",     "label": "📞 Other Enquiry"},
 ]
