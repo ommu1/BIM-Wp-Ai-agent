@@ -212,10 +212,12 @@ PROJECT_MENU_BUTTONS = [
 
 PROJECT_ARCH_DETAILS = """🏛️ *Architecture & Interior Design Projects*
 
-✅ Architectural Design & Drawings
+✅ Architectural Design 
 ✅ Interior Design 
 ✅ Landscape Design
 ✅ Rendering & 3D Visualization
+
+Here is our link, visit it: https://www.bimtrainingandprojects.com/design-projects
 
 *To get a quote, please share your details in exact format:*
 📝 _Name, Country & City, Email ,Phone Number , Project Description (building type, area, requirements)_
@@ -229,6 +231,8 @@ PROJECT_BIM_DETAILS = """📐 *BIM Projects — Coordination & Modelling*
 ✅ BIM 360 Cloud Collaboration
 ✅ As-Built Documentation
 ✅ LOD 100–400 modelling
+
+Here is our link, visit it: https://www.bimtrainingandprojects.com/bim-projects
 
 *Please share your details in the exact format *
 📝 _Name, Country & City, Email ,Phone Number , Project Description (building type, area, requirements)_
