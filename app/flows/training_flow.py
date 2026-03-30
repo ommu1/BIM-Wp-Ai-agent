@@ -194,7 +194,6 @@ async def handle_details_collection(phone: str, text: str):
                 phone,
                 M.confirm_details_received(new_data["name"]),
                 [
-                    {"id": "brochure",   "label": "📄 Get Brochure"},
                     {"id": "ask_human",  "label": "📞 Talk to Trainer"},
                     {"id": "back_main",  "label": "🏠 Main Menu"},
                 ],
@@ -205,7 +204,6 @@ async def handle_details_collection(phone: str, text: str):
                 M.confirm_details_received(new_data["name"]),
                 [
                     {"id": "enroll_now", "label": "✅ Enroll Now"},
-                    {"id": "brochure",   "label": "📄 Get Brochure"},
                     {"id": "ask_human",  "label": "📞 Talk to Trainer"},
                 ],
             )
@@ -337,7 +335,7 @@ async def handle_utr_submission(phone: str, text: str):
     else:
         await wa.send_text(phone,
             "Thank you! 📸 Our team will verify your payment within few hours and send your Student ID.\n\n"
-            "_For queries: reply HELP or contact us at: "📧 *askus@bimtrainingandprojects.com*""
+            "_For queries: reply HELP or contact us at: 📧 *askus@bimtrainingandprojects.com*_"
         )
     session_store.update(phone, stage="payment_submitted", awaiting_utr=False)
 

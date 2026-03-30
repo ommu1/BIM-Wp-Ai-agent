@@ -4,6 +4,7 @@
 import httpx
 from typing import List, Dict, Optional
 from app.config.settings import get_settings
+from app.config.messages import MENU_HINT
 from app.utils.logger import logger
 
 def _get_base() -> tuple[str, dict]:
@@ -33,12 +34,18 @@ async def _send(payload: dict) -> dict:
             raise
 
 
+def _ensure_menu_hint(text: str) -> str:
+    if "Type *Menu* anytime" in text:
+        return text
+    return text.rstrip() + MENU_HINT
+
+
 # ── 1. Plain text ─────────────────────────────────────────────────────────────
 async def send_text(to: str, text: str) -> dict:
     return await _send({
         "to": to,
         "type": "text",
-        "text": {"preview_url": False, "body": text}
+        "text": {"preview_url": False, "body": _ensure_menu_hint(text)}
     })
 
 
@@ -51,6 +58,7 @@ async def send_buttons(
     header_text: Optional[str] = None,
     footer_text: Optional[str] = None,
 ) -> dict:
+    body_text = _ensure_menu_hint(body_text)
     interactive = {
         "type": "button",
         "body": {"text": body_text},
@@ -87,6 +95,7 @@ async def send_list(
     sections: List[Dict],
     footer_text: Optional[str] = None,
 ) -> dict:
+    body_text = _ensure_menu_hint(body_text)
     interactive = {
         "type": "list",
         "body": {"text": body_text},

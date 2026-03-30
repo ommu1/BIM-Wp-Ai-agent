@@ -89,8 +89,6 @@ def confirm_details_received(name: str) -> str:
 
 Your enquiry has been noted. Our expert trainer will call or WhatsApp you within *few hours* with complete fee and batch details.
 
-📋 Download our course brochure in the meantime!
-
 _Reply *ENROLL* anytime to start the enrollment process._"""
 
 def enrollment_confirm(name: str, course: str, fee: str, batch_date: str) -> str:
@@ -127,10 +125,10 @@ def utr_received(name: str, utr: str) -> str:
 
 UTR: *{utr}*
 
-Our team will verify and confirm within *2 hours*.
+Our team will verify and confirm your payment.
 You'll receive your *Student ID* and welcome details once verified.
 
-_If you don't hear within 2 hours, call: *+*_"""
+_If you don't hear within hours, contact us at: 📧 *askus@bimtrainingandprojects.com*_"""
 
 def student_id_welcome(name: str, student_id: str, course: str, batch_date: str) -> str:
     return f"""🎊 *Welcome aboard, {name}!* 🏆
@@ -307,7 +305,7 @@ REVIEW_BUTTONS = [
 # ── HUMAN HANDOFF ─────────────────────────────────────────────────────────────
 def human_handoff() -> str:
     s = get_settings()
-    return f"""I understand! Let me connect you with our expert trainer. 
+    return f"""I understand! Our team will contact you soon.
 
 They will reach out within *few hours* (Mon–Sat, 10AM–7PM IST).
 

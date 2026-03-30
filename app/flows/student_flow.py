@@ -26,7 +26,7 @@ async def handle_student_id_input(phone: str, text: str):
         if any(w in text.lower() for w in ["help", "forgot", "lost", "don't know"]):
             await wa.send_text(phone,
                 "No problem! 😊\n\nShare the *phone number or email* you enrolled with "
-                "and our team will find your Student ID.\n\nOr call: *+91 72178 22883*"
+                "and our team will find your Student ID.\n\nOr contact us at:\n📧 *askus@bimtrainingandprojects.com*"
             )
         else:
             await wa.send_text(phone,
@@ -121,7 +121,7 @@ async def handle_student_menu(phone: str, list_id: str, text: str):
     elif list_id == "other_help":
         await wa.send_text(phone,
             "Sure! Type your question and I'll help.\n\n"
-            "For urgent issues: *+91 72178 22883* 📞"
+            "For urgent issues: *askus@bimtrainingandprojects.com*"
         )
         session_store.update(phone, stage="student_freetext")
 
@@ -200,5 +200,5 @@ async def _handle_cert_status(phone: str, student: dict):
         if not project_done: issues.append("• Project: Not yet submitted")
         await wa.send_text(phone,
             f"📋 *Certificate Status*\n\nNot yet eligible:\n" + "\n".join(issues) +
-            "\n\n_Complete the above requirements to receive your certificate._ 🙏"
+            "\n\n_Complete the above requirements to receive your certificate._ "
         )
