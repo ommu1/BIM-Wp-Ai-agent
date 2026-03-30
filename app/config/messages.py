@@ -35,9 +35,9 @@ TRAINING_MENU_SECTIONS = [
     {
         "title": "BIM Courses",
         "rows": [
-            {"id": "arch_bim",  "title": "🏛️ Arch, Structure & ID",  "description": "Revit · Navisworks · ACC · DYANMO"},
-            {"id": "mepf_bim",  "title": "⚙️ MEPF BIM Training",              "description": "Revit MEP · Navisworks · ACC "},
-            {"id": "workshop",  "title": "⚡ BIM Workshop",             "description": "Upcoming batch — register now"},
+            {"id": "arch_bim",  "title": "🏛️ Arch, Structure & ID",  "description": "Revit · Navisworks · ACC · Dyanmo"},
+            {"id": "mepf_bim",  "title": "⚙️ MEPF",              "description": "Revit MEP · Navisworks · ACC "},
+            {"id": "workshop",  "title": "⚡ BIM Workshop",             "description": "register now"},
             {"id": "back_main", "title": "↩ Back to Main Menu",               "description": ""},
         ]
     }
@@ -46,14 +46,14 @@ TRAINING_MENU_SECTIONS = [
 COURSE_ARCH = """🏛️ *BIM Training for Architecture, Structure & Interior Design *
 
 ✅ Live online sessions with expert trainer
-✅ Revit + Navisworks + ACC + DYANMO
+✅ Revit + Navisworks + ACC + Dyanmo
 ✅ Real project-based learning
 ✅ WhatsApp group support throughout
 ✅ Certificate of Completion
 
 *To get fee details & batch dates, Please reply with your details in this exact format:*
-  Your *Name*
-  *Phone NUmber*
+  *Name*
+  *Phone Number*
   *Email Address*
   *address*
   *Profession* (Student / Working Professional)
@@ -67,7 +67,7 @@ For BIM MEP Trainings (For MEP Engineers) visit our MEP Training Partner Website
 https://bimsavvyacademy.com/courses
 
 *Please share your details in exact format:*
- Name, , Phone number , Email , Address , Profession , Company/College & Years of Experience to get fee details.*
+ Name , Phone number , Email , Address , Profession , Company/College & Years of Experience to get fee details.*
  
  _Type *Menu* anytime to go back to main menu._"""
 
@@ -147,14 +147,14 @@ Your enrollment is *CONFIRMED!*
 🔗 Zoom link will be sent 30 mins before first class
 
 _Need software installation help? Reply *INSTALL*_
-_Questions? Reply *HELP*_ 🙏"""
+_Questions? Reply *HELP*"""
 
 # ── STUDENT PORTAL ────────────────────────────────────────────────────────────
 STUDENT_ID_PROMPT = """📋 *Existing Student Portal*
 
 Please enter your *Student ID* to continue.
 
-Example: *#BIMP-2026-1234*
+Example: *#BTP2022.02-01*
 
 _Don't know your ID? Reply *HELP* and we'll look it up._"""
 
@@ -256,7 +256,7 @@ Your *2nd installment of ₹{amount}* is due in *{day_str}* ({due_date}).
 
 _Scan the QR code to pay via UPI._
 
-After payment, reply with your *UTR number* 🙏"""
+After payment, reply with your *UTR number* or send a *payment screenshot* to confirm._"""
 
 def session_reminder(name: str, course: str, date_time: str, zoom_link: str) -> str:
     return f"""🔔 *Class Reminder — Starting Soon!*
@@ -296,7 +296,7 @@ _Please check your inbox (and spam folder)._
 ⭐ Google Review: https://g.page/r/YOUR_LINK
 💼 LinkedIn: https://linkedin.com/company/bim-training-and-projects
 
-Your review helps other professionals find quality BIM training 🙏"""
+Your review helps other professionals find quality BIM training """
 
 REVIEW_BUTTONS = [
     {"id": "review_google",   "label": "⭐ Google Review"},
@@ -307,9 +307,9 @@ REVIEW_BUTTONS = [
 # ── HUMAN HANDOFF ─────────────────────────────────────────────────────────────
 def human_handoff() -> str:
     s = get_settings()
-    return f"""I understand! Let me connect you with our expert trainer. 🙏
+    return f"""I understand! Let me connect you with our expert trainer. 
 
-They will reach out within *few hours* (Mon–Sat, 9AM–7PM IST).
+They will reach out within *few hours* (Mon–Sat, 10AM–7PM IST).
 
 For urgent queries:
 📧 *askus@bimtrainingandprojects.com*

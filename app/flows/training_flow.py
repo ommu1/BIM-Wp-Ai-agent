@@ -253,7 +253,7 @@ async def handle_post_details(phone: str, button_id: str, text: str):
 
     await wa.send_text(
         phone,
-        "Thank you for your message! 🙏\n\n"
+        "Thank you for your message! \n\n"
         "Our team will get back to you within *Few hours*.\n\n"
             "For urgent queries, please contact us at:\n"
         "📧 *askus@bimtrainingandprojects.com*"
@@ -312,7 +312,7 @@ async def start_enrollment(phone: str):
         "https://www.bimtrainingandprojects.com/_files/ugd/215925_6b0b247a053346399aea90b768e7e78d.pdf",
         "BIM_Payment_Details.pdf",
         "Please download this PDF for payment details including UPI QR code and bank transfer details.\n\n"
-        "After payment reply with your *UTR number* or send a *payment screenshot*. 🙏"
+        "After payment reply with your *UTR number* or send a *payment screenshot*. "
     )
     session_store.update(phone, stage="awaiting_utr", awaiting_utr=True)
 
@@ -336,8 +336,8 @@ async def handle_utr_submission(phone: str, text: str):
         await wa.send_text(phone, M.utr_received(name, utr))
     else:
         await wa.send_text(phone,
-            "Thank you! 📸 Our team will verify your payment within *2 hours* and send your Student ID.\n\n"
-            "_For queries: +91 72178 22883_ 🙏"
+            "Thank you! 📸 Our team will verify your payment within few hours and send your Student ID.\n\n"
+            "_For queries: reply HELP or contact us at: "📧 *askus@bimtrainingandprojects.com*""
         )
     session_store.update(phone, stage="payment_submitted", awaiting_utr=False)
 

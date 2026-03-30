@@ -220,7 +220,7 @@ async def handle_incoming_message(
         return await wa.send_text(phone,
             "⏳ *Payment verification in progress.*\n\n"
             "You'll receive your Student ID once confirmed.\n\n"
-            "Questions? Call *+* 🙏"
+            "Questions?  Reply *HELP* or contact us at:\n\n"
         )
 
     # Projects
@@ -242,7 +242,7 @@ async def handle_incoming_message(
     # Human requested
     if stage == "human_requested":
         return await wa.send_text(phone,
-            "_Our team has been notified and will reach out soon._ 🙏\n\nUrgent: *+*"
+            "_Our team has been notified and will reach out soon._ \n\nUrgent: *+*"
         )
 
     # ── CROSS-FLOW BUTTON IDs ──────────────────────────────────────────────

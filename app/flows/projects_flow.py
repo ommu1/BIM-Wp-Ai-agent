@@ -106,7 +106,7 @@ async def handle_post_project(phone: str, button_id: str, text: str):
     if button_id == "send_files" or any(w in lower for w in ["file", "drawing", "attach"]):
         await wa.send_text(phone,
             f"📎 *Share Project Files*\n\nEmail your drawings to:\n📧 *askus@bimtrainingandprojects.com*\n\n"
-            "_Mention your name and project type in the subject._ 🙏"
+            "_Mention your name and project type in the subject._ "
         )
     elif button_id == "view_work" or any(w in lower for w in ["portfolio", "sample", "work"]):
         await wa.send_text(phone, f"🌐 *Our Portfolio*\n\n{s.website_url}\n\n_100+ projects delivered_ 🏗️")
@@ -116,7 +116,7 @@ async def handle_post_project(phone: str, button_id: str, text: str):
     else:
         await wa.send_text(
             phone,
-            "Thank you for reaching out! 🙏\n\n"
+            "Thank you for reaching out! \n\n"
             "Our team will contact you within *few hours*.\n\n"
                 "For urgent queries, please contact us at:\n"
             "📧 *askus@bimtrainingandprojects.com*"
