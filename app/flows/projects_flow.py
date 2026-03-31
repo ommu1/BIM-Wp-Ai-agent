@@ -48,19 +48,20 @@ async def handle_project_details(phone: str, text: str):
         new_data["user_phone"] = phone_match.group(0)
         text_clean = text_clean.replace(phone_match.group(0), "")
 
-     # Split by comma — positional assignment
-    parts = [p.strip() for p in text_clean.split(",") if p.strip()]
+      # Clean and split by comma or newline
+    import re as re2
+    text_clean = re2.sub(r'\s+', ' ', text_clean).strip()
+    text_clean = re2.sub(r',\s*,', ',', text_clean)
+    parts = [p.strip() for p in re2.split(r'[,\n]', text_clean) if p.strip()]
 
     if len(parts) >= 1 and not new_data.get("name"):
         new_data["name"] = parts[0]
     if len(parts) >= 2 and not new_data.get("address"):
         new_data["address"] = parts[1]
-
-     # Save only parts after name and address as description
-    if len(parts) > 2:
+    if len(parts) > 2 and not new_data.get("description"):
         new_data["description"] = ", ".join(parts[2:])
-    else:
-        new_data["description"] = ""
+    elif not new_data.get("description"):
+        new_data["description"] = text or ""
 
     session_store.update(phone, data=new_data)
 
@@ -91,10 +92,12 @@ async def handle_project_details(phone: str, text: str):
     else:
         await wa.send_text(
             phone,
-            "Please share your details in this format:\n\n"
-            "_Name, Phone, Email, City/Country, Project Description_\n\n"
+            "⚠️ *We could not read your details correctly.*\n\n"
+            "Please share in this exact format:\n\n"
+            "Name, Phone, Email, City/Country, Project Description\n\n"
             "*Example:*\n"
-            "_Rahul Sharma, 9876543210, rahul@gmail.com, Mumbai India, I want to learn Interior Design_"
+            "_Rahul Sharma, 9876543210, rahul@gmail.com, Mumbai India, I need interior design for a 3BHK apartment_\n\n"
+            "_Type *Menu* to go back to main menu._"
         )
 
 
