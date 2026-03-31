@@ -51,14 +51,14 @@ COURSE_ARCH = """🏛️ *BIM Training for Architecture, Structure & Interior De
 ✅ WhatsApp group support throughout
 ✅ Certificate of Completion
 
-*To get fee details & batch dates, Please reply with your details in this exact format:*
-  *Name*
-  *Phone Number*
-  *Email Address*
-  *address*
-  *Profession* (Student / Working Professional)
-  *Company or College
-  *Years of Experience*"""
+*Please share your details in this format:*
+
+Name, Phone, Email, City/Country, Profession (Student / Working Professional), College/Company, Experience
+
+*Example:*
+_Rahul Sharma, 9876543210, rahul@gmail.com, Mumbai India, Student, IIT Bombay, 2 years_
+
+_Type *Menu* anytime to go back to main menu._"""
   
 
 COURSE_MEPF = """⚙️ *MEPF BIM Training*
@@ -67,7 +67,11 @@ For BIM MEP Trainings (For MEP Engineers) visit our MEP Training Partner Website
 https://bimsavvyacademy.com/courses
 
 *Please share your details in exact format:*
- Name , Phone number , Email , Address , Profession , Company/College & Years of Experience to get fee details.*
+ Name, Phone number, Email address, City/Country, Profession (Student / Working Professional), Company/College & Years of Experience to get fee details.*
+
+ *Example:*
+_Rahul Sharma, 9876543210, rahul@gmail.com, Mumbai India, Student, IIT Bombay, 2 years_
+
  
  _Type *Menu* anytime to go back to main menu._"""
 
@@ -80,7 +84,10 @@ COURSE_WORKSHOP = """⚡ *BIM Workshops — Upcoming !*
 🔗 https://www.bimtrainingandprojects.com/workshops
 
 *To register, please share in exact format:*
-📝 *Name, Phone, Email , Address , Profession , Company/College , Experience *
+📝 *Name, Phone, Email,  City/Country, Profession (Student / Working Professional), Company/College, Experience *
+
+*Example:*
+_Rahul Sharma, 9876543210, rahul@gmail.com, Mumbai India, Student, IIT Bombay, 2 years_
 
 _Type *Menu* anytime to go back to main menu._"""
 
@@ -220,7 +227,10 @@ PROJECT_ARCH_DETAILS = """🏛️ *Architecture & Interior Design Projects*
 Here is our link, visit it: https://www.bimtrainingandprojects.com/design-projects
 
 *To get a quote, please share your details in exact format:*
-📝 _Name, Country & City, Email ,Phone Number , Project Description (building type, area, requirements)_
+📝 _Name, Country & City, Email ,Phone Number, Project Description (building type, area, requirements)_ 
+ 
+*Example:*
+_Rahul Sharma, 9876543210, rahul@gmail.com, Mumbai India, I need interior design for a 3BHK apartment_
 
 _Type *Menu* anytime to go back to main menu._"""
 
@@ -235,7 +245,10 @@ PROJECT_BIM_DETAILS = """📐 *BIM Projects — Coordination & Modelling*
 Here is our link, visit it: https://www.bimtrainingandprojects.com/bim-projects
 
 *Please share your details in the exact format *
-📝 _Name, Country & City, Email ,Phone Number , Project Description (building type, area, requirements)_
+📝 _Name, Country & City, Email ,Phone Number, Project Description (building type, area, requirements)_
+
+*Example:*
+_Rahul Sharma, 9876543210, rahul@gmail.com, Mumbai India, I need BIM modelling for a commercial building_
 
 _Type *Menu* anytime to go back to main menu._"""
 

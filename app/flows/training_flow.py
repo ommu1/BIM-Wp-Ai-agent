@@ -80,7 +80,10 @@ async def handle_details_collection(phone: str, text: str):
         return await handle_welcome(phone)
     
     import re
-    new_data = dict(session.data)
+    # Start fresh — don't carry over data from other flows
+    new_data = {}
+    if session.flow == "training":
+        new_data = dict(session.data)
 
     # Extract email
     email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', text)
@@ -99,7 +102,9 @@ async def handle_details_collection(phone: str, text: str):
     # Extract experience (number + year or just a single digit)
     exp_match: Match[str] | None = re.search(r'\b(\d+)\s*(?:year|yr|years|yrs)?\b', text_clean, re.IGNORECASE)
 
-    # Split by BOTH comma AND newline
+   # Step 3 — Clean up and split by comma OR newline
+    text_clean = re.sub(r'\s+', ' ', text_clean).strip()
+    text_clean = re.sub(r',\s*,', ',', text_clean)  # remove double commas
     parts = [p.strip() for p in re.split(r'[,\n]', text_clean) if p.strip()]
 
     unassigned = []
@@ -211,11 +216,14 @@ async def handle_details_collection(phone: str, text: str):
     else:
         await wa.send_text(
             phone,
-            "Please share your details in this format:\n\n"
-            "_Name, Phone, Email, City/Country, Profession, College/Company, Experience_\n\n"
+            "⚠️ *We could not read your details correctly.*\n\n"
+            "Please share in this exact format:\n\n"
+            "Name, Phone, Email, City/Country, Profession, College/Company, Experience\n\n"
             "*Example:*\n"
-            "Rahul Sharma, 9876543210, rahul@gmail.com, Mumbai India, Student, IIT Bombay, 0 years"
+            "_Rahul Sharma, 9876543210, rahul@gmail.com, Mumbai India, Student, IIT Bombay, 2 years_\n\n"
+            "_Type *Menu* to go back to main menu._"
         )
+        
 
 
 # ── STEP 4: Post-details button handling ─────────────────────────────────────
