@@ -112,7 +112,15 @@ async def handle_post_project(phone: str, button_id: str, text: str):
             "_Mention your name and project type in the subject._ "
         )
     elif button_id == "view_work" or any(w in lower for w in ["portfolio", "sample", "work"]):
-        await wa.send_text(phone, f"🌐 *Our Portfolio*\n\n{s.website_url}\n\n_100+ projects delivered_ 🏗️")
+        session = session_store.get_or_create(phone)
+        sub_flow = session.sub_flow
+        if sub_flow == "Design Projects":
+            portfolio_url = "https://www.bimtrainingandprojects.com/design-projects"
+        elif sub_flow == "BIM Projects":
+            portfolio_url = "https://www.bimtrainingandprojects.com/bim-projects"
+        else:
+            portfolio_url = s.website_url
+        await wa.send_text(phone, f"🌐 *Our Portfolio*\n\n{portfolio_url}\n\n_100+ projects delivered_ 🏗️")
     elif button_id == "back_main":
         from app.flows.welcome_flow import handle_welcome
         await handle_welcome(phone)
