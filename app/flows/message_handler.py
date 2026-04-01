@@ -146,7 +146,7 @@ async def handle_incoming_message(
         else:
             text_clean = text or ""
 
-        phone_match = re.search(r'\b\d{10}\b', text_clean)
+        phone_match = re.search(r'\b\d{10,11}\b', text_clean)
         if phone_match:
             phone_num = phone_match.group(0)
             text_clean = text_clean.replace(phone_match.group(0), "")

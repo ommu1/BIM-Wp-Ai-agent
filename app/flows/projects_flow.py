@@ -43,7 +43,7 @@ async def handle_project_details(phone: str, text: str):
         text_clean = text or ""
 
     # Extract phone
-    phone_match = re.search(r'\b\d{10}\b', text_clean)
+    phone_match = re.search(r'\b\d{10,11}\b', text_clean)
     if phone_match:
         new_data["user_phone"] = phone_match.group(0)
         text_clean = text_clean.replace(phone_match.group(0), "")
