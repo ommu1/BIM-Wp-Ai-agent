@@ -182,7 +182,7 @@ async def handle_incoming_message(
         await wa.send_text(
             phone,
             f"*Thank you{', ' + name if name else ''}!* ✅\n\n"
-            "Your details have been noted. Our team will call you back within * Few hours*.\n\n"
+            "Your details have been noted. Our team will call you back.\n\n"
             "📧 *askus@bimtrainingandprojects.com*"
         )
         session_store.update(phone, stage="main_menu")
@@ -242,7 +242,7 @@ async def handle_incoming_message(
     # Human requested
     if stage == "human_requested":
         return await wa.send_text(phone,
-            "_Our team has been notified and will reach out soon._ \n\nUrgent: *+*"
+            "_Our team has been notified and will reach out._ \n\nUrgent: *+*"
         )
 
     # ── CROSS-FLOW BUTTON IDs ──────────────────────────────────────────────
@@ -258,9 +258,9 @@ async def handle_cross_flow(phone: str, btn: str, text: str, session):
         "back_main":        lambda: handle_welcome(phone),
         "claim_cert":       lambda: handle_claim_certificate(phone),
         "try_again":        lambda: start_student_flow(phone),
-        "review_google":    lambda: wa.send_text(phone, "⭐ *Leave a Google Review:*\nhttps://g.page/r/YOUR_LINK\n\nThank you! 🙏"),
-        "review_linkedin":  lambda: wa.send_text(phone, "💼 *Connect on LinkedIn:*\nhttps://linkedin.com/company/bim-training-and-projects\n\nThank you! 🙏"),
-        "review_skip":      lambda: wa.send_text(phone, "No problem! Feel free to reach out anytime. 🙏"),
+        "review_google":    lambda: wa.send_text(phone, "⭐ *Leave a Google Review:*\nhttps://g.page/r/YOUR_LINK\n\nThank you!"),
+        "review_linkedin":  lambda: wa.send_text(phone, "💼 *Connect on LinkedIn:*\nhttps://linkedin.com/company/bim-training-and-projects\n\nThank you!"),
+        "review_skip":      lambda: wa.send_text(phone, "No problem! Feel free to reach out anytime.") ,
         "paid_utr":         lambda: handle_utr_submission(phone, text),
         "contact_us":       lambda: wa.send_text(phone, f" *Contact Us*\n\n+\naskus@bimtrainingandprojects.com"),
         "ask_human":        None,  # handled below
@@ -294,7 +294,7 @@ async def handle_cross_flow(phone: str, btn: str, text: str, session):
     
     await wa.send_text(
         phone,
-        "🙏 *Not sure what you mean!*\n\n"
+        "*Not sure what you mean!*\n\n"
         "Please type one of these to get started:\n\n"
         "• *Hi* — Main menu\n"
         "• *BIM* — Course information\n"

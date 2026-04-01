@@ -252,15 +252,15 @@ async def handle_post_details(phone: str, button_id: str, text: str):
 
     if any(w in lower for w in ["discount", "offer", "price", "reduce", "less"]):
         await wa.send_text(phone,
-            "I understand! 😊 I'll pass your request to our trainer.\n\n"
-            "_They'll share the best available offer when they call you._ 🙏"
+            "I understand! 😊 I'll pass your request to our team.\n\n"
+            "_They'll share the best available offer when they call you._"
         )
         return
 
     await wa.send_text(
         phone,
         "Thank you for your message! \n\n"
-        "Our team will get back to you within *Few hours*.\n\n"
+        "Our team will get back to you.\n\n"
             "For urgent queries, please contact us at:\n"
         "📧 *askus@bimtrainingandprojects.com*"
     )
@@ -275,12 +275,12 @@ async def start_enrollment(phone: str):
         "arch_bim": {
             "name":  "Architecture, Structure & ID BIM",
             "fee":   config.get("arch_fee", "18000"),
-            "batch": config.get("arch_batch", "Contact us for next batch"),
+            "batch": config.get("arch_batch", "To know about upcoming batches, visit: https://www.bimtrainingandprojects.com/batches-info"),
         },
         "mepf_bim": {
             "name":  "MEPF BIM Training",
             "fee":   config.get("mepf_fee", "15000"),
-            "batch": config.get("mepf_batch", "Contact us for next batch"),
+            "batch": config.get("mepf_batch", "To know about upcoming batches, visit: https://www.bimtrainingandprojects.com/batches-info"),
         },
         "workshop": {
             "name":  "BIM Workshop",
@@ -342,7 +342,7 @@ async def handle_utr_submission(phone: str, text: str):
         await wa.send_text(phone, M.utr_received(name, utr))
     else:
         await wa.send_text(phone,
-            "Thank you! 📸 Our team will verify your payment within few hours and send your Student ID.\n\n"
+            "Thank you! 📸 Our team will verify your payment and send your Student ID.\n\n"
             "_For queries: reply HELP or contact us at: 📧 *askus@bimtrainingandprojects.com*_"
         )
     session_store.update(phone, stage="payment_submitted", awaiting_utr=False)

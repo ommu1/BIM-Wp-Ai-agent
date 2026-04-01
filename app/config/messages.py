@@ -45,7 +45,7 @@ TRAINING_MENU_SECTIONS = [
 
 COURSE_ARCH = """🏛️ *BIM Training for Architecture, Structure & Interior Design *
 
-✅ Live online sessions with expert trainer
+✅ Live online sessions with our team members
 ✅ Revit + Navisworks + ACC + Dyanmo
 ✅ Real project-based learning
 ✅ WhatsApp group support throughout
@@ -94,7 +94,7 @@ _Type *Menu* anytime to go back to main menu._"""
 def confirm_details_received(name: str) -> str:
     return f"""✅ Thank you, *{name}!*
 
-Your enquiry has been noted. Our expert trainer will call or WhatsApp you within *few hours* with complete fee and batch details.
+Your enquiry has been noted. Our team member will call or WhatsApp you with complete fee and batch details.
 
 _Reply *ENROLL* anytime to start the enrollment process._"""
 
@@ -105,7 +105,7 @@ def enrollment_confirm(name: str, course: str, fee: str, batch_date: str) -> str
 Here are your enrollment details:
 
 *Course:* {course}
-*Batch Start:* {batch_date}
+*Batch Start:* {"To know about upcoming batches, visit: https://www.bimtrainingandprojects.com/batches-info"}
 
 Please download the payment details PDF below.
 After payment reply with your *UTR number* or send a *payment screenshot*.
@@ -236,11 +236,10 @@ _Type *Menu* anytime to go back to main menu._"""
 
 PROJECT_BIM_DETAILS = """📐 *BIM Projects — Coordination & Modelling*
 
-✅ BIM Modelling (Architectural, Structural, MEP)
-✅ Clash Detection (Navisworks)
-✅ BIM 360 Cloud Collaboration
-✅ As-Built Documentation
-✅ LOD 100–400 modelling
+✅ BIM Modelling (Architectural, Structural, MEPF)
+✅ Clash Detection
+✅ BIM 360 Cloud Collaboration / ACC
+✅ Construction Documentation
 
 Here is our link, visit it: https://www.bimtrainingandprojects.com/bim-projects
 
@@ -255,7 +254,7 @@ _Type *Menu* anytime to go back to main menu._"""
 def project_received(name: str) -> str:
     return f"""✅ *Thank you, {name}!*
 
-Your project enquiry has been noted. Our BIM expert will review your requirements and reach out within *few business hours*.
+Your project enquiry has been noted. Our team member will review your requirements and reach out.
 
 _Want to share project files?_
 📧 *askus@bimtrainingandprojects.com*"""
@@ -322,9 +321,9 @@ REVIEW_BUTTONS = [
 # ── HUMAN HANDOFF ─────────────────────────────────────────────────────────────
 def human_handoff() -> str:
     s = get_settings()
-    return f"""I understand! Our team will contact you soon.
+    return f"""I understand! Our team will contact you.
 
-They will reach out within *few hours* (Mon–Sat, 10AM–7PM IST).
+They will reach out (Mon–Sat, 10AM–7PM IST).
 
 For urgent queries:
 📧 *askus@bimtrainingandprojects.com*

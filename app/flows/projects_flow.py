@@ -128,7 +128,7 @@ async def handle_post_project(phone: str, button_id: str, text: str):
         await wa.send_text(
             phone,
             "Thank you for reaching out! \n\n"
-            "Our team will contact you within *few hours*.\n\n"
+            "Our team will contact you.\n\n"
                 "For urgent queries, please contact us at:\n"
             "📧 *askus@bimtrainingandprojects.com*"
         )
