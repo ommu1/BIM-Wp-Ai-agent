@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     gmail_app_password: str = "Abhishek_1991"
 
     # Business
-    admin_phone: str = "919668737803"
+    admin_phone: str = "918287742015"
     business_name: str = "BIM Training & Projects"
     website_url: str = "https://www.bimtrainingandprojects.com"
     privacy_policy_url: str = "https://www.bimtrainingandprojects.com/privacy-policy"
