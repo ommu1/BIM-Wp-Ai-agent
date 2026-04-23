@@ -51,7 +51,7 @@ async def handle_incoming_message(
     lower = (text or "").lower().strip()
 
     # ── GLOBAL KEYWORDS ────────────────────────────────────────────────────
-    if lower in ("hi", "hello", "start", "menu", "bim", "hey", ""):
+    if lower in ("hi", "hello", "start", "menu",  "hey", ""):
         return await handle_welcome(phone)
 
     if session.stage == "start":
@@ -170,14 +170,7 @@ async def handle_incoming_message(
             "description": description,
         })
 
-        from app.services import sheets
-        await asyncio.to_thread(sheets.log_other_enquiry, {
-            "phone": phone,
-            "name": name,
-            "email": email,
-            "address": address,
-            "description": description,
-        })
+    
 
         await wa.send_text(
             phone,
