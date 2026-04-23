@@ -50,6 +50,12 @@ async def route_from_main_menu(phone: str, button_id: str, text: str):
         await wa.send_text(phone, M.human_handoff())
         session_store.update(phone, stage="human_requested", human_mode=True)
         return
+    
+    # fallback
+    await wa.send_text(phone,
+        "⚠️ Please select one of the options above.\n\n"
+        "Type *Menu* to see the main menu again."
+    )
 
     # Default — show welcome again
     await handle_welcome(phone)
