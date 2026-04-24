@@ -54,7 +54,6 @@ async def route_from_main_menu(phone: str, button_id: str, text: str):
     # fallback
     await wa.send_text(phone,
         "⚠️ Please select one of the options above.\n\n"
-        "Type *Menu* to see the main menu again."
     )
 
     # Default — show welcome again
