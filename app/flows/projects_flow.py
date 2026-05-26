@@ -18,10 +18,12 @@ async def handle_project_selection(phone: str, button_id: str, text: str):
     lower = (text or "").lower()
 
     if button_id == "arch_project" or any(w in lower for w in ["architect", "interior", "design"]):
+        session_store.reset(phone)
         await wa.send_text(phone, M.PROJECT_ARCH_DETAILS)
         session_store.update(phone, stage="collecting_project_details", sub_flow="Design Projects")
 
     elif button_id == "bim_project" or any(w in lower for w in ["bim", "modelling", "clash", "coordination"]):
+        session_store.reset(phone)
         await wa.send_text(phone, M.PROJECT_BIM_DETAILS)
         session_store.update(phone, stage="collecting_project_details", sub_flow="BIM Projects")
 
@@ -107,11 +109,15 @@ async def handle_post_project(phone: str, button_id: str, text: str):
     s = get_settings()
 
     if button_id == "send_files" or any(w in lower for w in ["file", "drawing", "attach"]):
+        session_store.reset(phone)
         await wa.send_text(phone,
-            f"📎 *Share Project Files*\n\nEmail your drawings to:\n📧 *askus@bimtrainingandprojects.com*\n\n"
-            "_Mention your name and project type in the subject._ "
+            "📎 *Share Project Files*\n\nEmail your drawings to:\n"
+            "📧 *askus@bimtrainingandprojects.com*\n\n"
+            "_Mention your name and project type in the subject._"
         )
+
     elif button_id == "view_work" or any(w in lower for w in ["portfolio", "sample", "work"]):
+        session_store.reset(phone)
         session = session_store.get_or_create(phone)
         sub_flow = session.sub_flow
         if sub_flow == "Design Projects":
@@ -120,15 +126,22 @@ async def handle_post_project(phone: str, button_id: str, text: str):
             portfolio_url = "https://www.bimtrainingandprojects.com/bim-projects"
         else:
             portfolio_url = s.website_url
-        await wa.send_text(phone, f"🌐 *Our Portfolio*\n\n{portfolio_url}\n\n_100+ projects delivered_ 🏗️")
+        await wa.send_text(phone,
+            f"🌐 *Our Portfolio*\n\n{portfolio_url}\n\n"
+            "_100+ projects delivered_ 🏗️"
+        )
+
     elif button_id == "back_main":
+        session_store.reset(phone)
         from app.flows.welcome_flow import handle_welcome
         await handle_welcome(phone)
+
     else:
+        session_store.reset(phone)
         await wa.send_text(
             phone,
-            "Thank you for reaching out! \n\n"
+            "Thank you for reaching out! 🙏\n\n"
             "Our team will contact you.\n\n"
-                "For urgent queries, please contact us at:\n"
+            "For urgent queries:\n"
             "📧 *askus@bimtrainingandprojects.com*"
         )

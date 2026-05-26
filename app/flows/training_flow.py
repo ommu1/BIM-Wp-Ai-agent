@@ -25,9 +25,10 @@ async def start_training_flow(phone: str):
 
 # ── STEP 2: Handle course selection ──────────────────────────────────────────
 async def handle_course_selection(phone: str, list_id: str, text: str):
-    lower = (text or "").lower()
-
+    lower = text.lower()
+    
     if list_id == "arch_bim" or any(w in lower for w in ["architect", "structure", "interior", "id bim"]):
+        session_store.reset(phone)
         await wa.send_buttons(
             phone,
             M.COURSE_ARCH,
@@ -40,10 +41,12 @@ async def handle_course_selection(phone: str, list_id: str, text: str):
         session_store.update(phone, stage="collecting_details", sub_flow="arch_bim")
 
     elif list_id == "mepf_bim" or any(w in lower for w in ["mepf", "mep", "mechanical", "electrical", "plumbing"]):
+        session_store.reset(phone)
         await wa.send_text(phone, M.COURSE_MEPF)
         session_store.update(phone, stage="collecting_details", sub_flow="mepf_bim")
 
     elif list_id == "workshop" or any(w in lower for w in ["workshop", "free", "event"]):
+        session_store.reset(phone)
         await wa.send_text(phone, M.COURSE_WORKSHOP)
         session_store.update(phone, stage="collecting_details", sub_flow="workshop")
 
@@ -232,15 +235,18 @@ async def handle_post_details(phone: str, button_id: str, text: str):
     session = session_store.get_or_create(phone)
 
     if button_id == "enroll_now" or any(w in lower for w in ["enroll", "enrol", "join", "pay", "register"]):
+        session_store.reset(phone)
         return await start_enrollment(phone)
 
     if button_id == "brochure" or "brochure" in lower:
+        session_store.reset(phone)
         return await send_brochure(phone)
 
     if button_id == "curriculum" or "curriculum" in lower:
+        session_store.reset(phone)
         return await send_curriculum(phone)
-
     if button_id == "ask_human" or any(w in lower for w in ["human", "trainer", "call", "talk"]):
+        session_store.reset(phone)
         await wa.send_text(phone, M.human_handoff())
         session_store.update(phone, stage="human_requested", human_mode=True)
         return

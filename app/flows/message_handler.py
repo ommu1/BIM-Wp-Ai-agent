@@ -184,10 +184,11 @@ async def handle_incoming_message(
     # Training
     if stage == "training_check":
         if button_id == "existing_yes" or "yes" in lower:
+            session_store.reset(phone)
             from app.flows.student_flow import start_student_flow
             return await start_student_flow(phone)
         else:
-            from app.flows.training_flow import start_training_flow
+            session_store.reset(phone)
             await wa.send_list(
                 phone,
                 M.TRAINING_MENU_BODY,
