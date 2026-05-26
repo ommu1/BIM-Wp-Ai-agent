@@ -125,6 +125,68 @@ async def handle_incoming_message(
         session_store.update(phone, stage="human_requested")
         return
 
+    # ── GLOBAL BUTTON INTERCEPTOR (solves cross-flow button clicks) ───────
+    btn = button_id or list_id
+    if btn:
+        if btn in ["training", "projects", "other", "student"]:
+            return await route_from_main_menu(phone, btn, text or "")
+            
+        if btn == "existing_yes":
+            from app.flows.student_flow import start_student_flow
+            return await start_student_flow(phone)
+            
+        if btn == "existing_no":
+            await wa.send_list(
+                phone,
+                M.TRAINING_MENU_BODY,
+                "📚 View Courses",
+                M.TRAINING_MENU_SECTIONS,
+                footer_text="bimtrainingandprojects.com",
+            )
+            session_store.update(phone, stage="training_menu", flow="training")
+            return
+
+        if btn in ["arch_bim", "mepf_bim", "workshop"]:
+            from app.flows.training_flow import handle_course_selection
+            return await handle_course_selection(phone, btn, text or "")
+
+        if btn in ["arch_project", "bim_project"]:
+            from app.flows.projects_flow import handle_project_selection
+            return await handle_project_selection(phone, btn, text or "")
+
+        if btn in ["send_files", "view_work"]:
+            from app.flows.projects_flow import handle_post_project
+            return await handle_post_project(phone, btn, text or "")
+
+        if btn == "curriculum":
+            from app.flows.training_flow import send_curriculum
+            return await send_curriculum(phone)
+
+        if btn in ["zoom_link", "next_class", "install", "submit_proj", "attendance", "cert_status", "other_help"]:
+            from app.flows.student_flow import handle_student_menu
+            return await handle_student_menu(phone, btn, text or "")
+            
+        # Try cross_flow for remaining buttons like enroll_now, brochure, back_main, ask_human
+        btn_map = {
+            "enroll_now":       lambda: start_enrollment(phone),
+            "brochure":         lambda: send_brochure(phone),
+            "back_main":        lambda: handle_welcome(phone),
+            "claim_cert":       lambda: handle_claim_certificate(phone),
+            "try_again":        lambda: start_student_flow(phone),
+            "review_google":    lambda: wa.send_text(phone, "⭐ *Leave a Google Review:*\nhttps://g.page/r/YOUR_LINK\n\nThank you!"),
+            "review_linkedin":  lambda: wa.send_text(phone, "💼 *Connect on LinkedIn:*\nhttps://linkedin.com/company/bim-training-and-projects\n\nThank you!"),
+            "review_skip":      lambda: wa.send_text(phone, "No problem! Feel free to reach out anytime.") ,
+            "paid_utr":         lambda: handle_utr_submission(phone, text or ""),
+            "contact_us":       lambda: wa.send_text(phone, f" *Contact Us*\n\n+\naskus@bimtrainingandprojects.com"),
+        }
+        if btn in btn_map and btn_map[btn]:
+            return await btn_map[btn]()
+            
+        if btn == "ask_human":
+            await wa.send_text(phone, M.human_handoff())
+            session_store.update(phone, stage="human_requested", human_mode=True)
+            return
+
     # ── STAGE ROUTER ───────────────────────────────────────────────────────
     stage = session.stage
 

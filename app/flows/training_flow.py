@@ -61,7 +61,8 @@ async def handle_course_selection(phone: str, list_id: str, text: str):
         await wa.send_text(
             phone,
             "Please select a course from the list above.\n\n"
-            "Or type *Menu* to go back to the main menu."
+            "Or type *Menu* to go back to the main menu.\n"
+            "_Type *Help* if you need assistance._"
         )
 
 
