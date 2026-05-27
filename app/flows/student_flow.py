@@ -191,7 +191,7 @@ async def _handle_cert_status(phone: str, student: dict):
             "*You are eligible for your certificate!* 🏆",
             [
                 {"id": "claim_cert", "label": "🎓 Claim Certificate"},
-                {"id": "back_menu",  "label": "↩ Back to Menu"},
+                {"id": "back_main",  "label": "↩ Back to Menu"},
             ]
         )
     else:
