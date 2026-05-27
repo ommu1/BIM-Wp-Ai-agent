@@ -177,7 +177,7 @@ async def handle_incoming_message(
             "review_linkedin":  lambda: wa.send_text(phone, "💼 *Connect on LinkedIn:*\nhttps://linkedin.com/company/bim-training-and-projects\n\nThank you!"),
             "review_skip":      lambda: wa.send_text(phone, "No problem! Feel free to reach out anytime.") ,
             "paid_utr":         lambda: handle_utr_submission(phone, text or ""),
-            "contact_us":       lambda: wa.send_text(phone, f" *Contact Us*\n\n+\naskus@bimtrainingandprojects.com"),
+            "contact_us":       lambda: wa.send_text(phone, "📞 *Contact Us*\n\n📞 *+91 72178 22883*\n📧 *askus@bimtrainingandprojects.com*"),
         }
         if btn in btn_map and btn_map[btn]:
             return await btn_map[btn]()
@@ -318,7 +318,7 @@ async def handle_cross_flow(phone: str, btn: str, text: str, session):
         "review_linkedin":  lambda: wa.send_text(phone, "💼 *Connect on LinkedIn:*\nhttps://linkedin.com/company/bim-training-and-projects\n\nThank you!"),
         "review_skip":      lambda: wa.send_text(phone, "No problem! Feel free to reach out anytime.") ,
         "paid_utr":         lambda: handle_utr_submission(phone, text),
-        "contact_us":       lambda: wa.send_text(phone, f" *Contact Us*\n\n+\naskus@bimtrainingandprojects.com"),
+        "contact_us":       lambda: wa.send_text(phone, "📞 *Contact Us*\n\n📞 *+91 72178 22883*\n📧 *askus@bimtrainingandprojects.com*"),
         "ask_human":        None,  # handled below
     }
 

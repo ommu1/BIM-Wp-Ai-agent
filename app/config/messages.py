@@ -327,4 +327,5 @@ They will reach out (Mon–Sat, 10AM–7PM IST).
 
 For urgent queries:
 📧 *askus@bimtrainingandprojects.com*
+📞 *+91 72178 22883*
 🌐 *{s.website_url}*"""
