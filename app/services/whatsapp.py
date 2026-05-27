@@ -35,7 +35,8 @@ async def _send(payload: dict) -> dict:
 
 
 def _ensure_menu_hint(text: str) -> str:
-    if "Type *Menu* anytime" in text:
+    # Convert text to lowercase just for the check so it catches "MENU" or "Menu"
+    if "type *menu*" in text.lower():
         return text
     return text.rstrip() + MENU_HINT
 
