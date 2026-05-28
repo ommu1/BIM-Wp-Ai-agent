@@ -2,6 +2,8 @@
 # Central router — every incoming WhatsApp message passes through here
 
 import asyncio
+
+from matplotlib import text
 from app.services import whatsapp as wa
 from app.services import ai as ai_svc
 from app.config import messages as M
@@ -40,6 +42,7 @@ async def handle_incoming_message(
     session = session_store.get_or_create(phone)
 
     # ── ADMIN COMMANDS from your phone ────────────────────────────────────────
+    logger.info(f"Admin check | incoming={phone} | admin={s.admin_phone}")
     if phone == s.admin_phone and text and text.startswith("ADMIN:"):
         return await handle_admin_command(phone, text)
 
