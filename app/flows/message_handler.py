@@ -2,8 +2,6 @@
 # Central router — every incoming WhatsApp message passes through here
 
 import asyncio
-
-from matplotlib import text
 from app.services import whatsapp as wa
 from app.services import ai as ai_svc
 from app.config import messages as M
