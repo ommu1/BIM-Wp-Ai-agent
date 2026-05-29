@@ -222,9 +222,9 @@ async def handle_details_collection(phone: str, text: str):
             phone,
             "⚠️ *We could not read your details correctly.*\n\n"
             "Please share in this exact format:\n\n"
-            "Name, Phone, Email, City/Country, Profession, College/Company, Experience\n\n"
+            "Name, Phone, Email\n\n"
             "*Example:*\n"
-            "_Rahul Sharma, 9876543210, rahul@gmail.com, Mumbai India, Student, IIT Bombay, 2 years_\n\n"
+            "_Rahul Sharma, 9876543210, rahul@gmail.com_\n\n"
             "_Type *Menu* to go back to main menu._"
         )
         

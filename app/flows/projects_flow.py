@@ -96,9 +96,9 @@ async def handle_project_details(phone: str, text: str):
             phone,
             "⚠️ *We could not read your details correctly.*\n\n"
             "Please share in this exact format:\n\n"
-            "Name, Phone, Email, City/Country, Project Description\n\n"
+            "Name, Phone, Email\n\n"
             "*Example:*\n"
-            "_Rahul Sharma, 9876543210, rahul@gmail.com, Mumbai India, I need interior design for a 3BHK apartment_\n\n"
+            "_Rahul Sharma, 9876543210, rahul@gmail.com_\n\n"
             "_Type *Menu* to go back to main menu. Type *Help* if you need assistance._"
         )
 
