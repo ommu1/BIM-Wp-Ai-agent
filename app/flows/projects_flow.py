@@ -63,7 +63,7 @@ async def handle_project_details(phone: str, text: str):
     if len(parts) > 2 and not new_data.get("description"):
         new_data["description"] = ", ".join(parts[2:])
     elif not new_data.get("description"):
-        new_data["description"] = text or ""
+        new_data["description"] = ""
 
     session_store.update(phone, data=new_data)
 
