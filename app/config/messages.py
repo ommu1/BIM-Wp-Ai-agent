@@ -3,7 +3,7 @@
 
 import os
 from app.config.settings import get_settings
-MENU_HINT = "\n\n_Type *Menu* anytime to go back to main menu._"
+MENU_HINT = "\n\n_Type *Menu* anytime to go back to main menu._\n_Type *Help* to talk to our team._"
 
 def cfg():
     return get_settings()
@@ -58,7 +58,8 @@ Name, Phone, Email
 *Example:*
 _Rahul Sharma, 9876543210, rahul@gmail.com_
 
-_Type *Menu* anytime to go back to main menu._"""
+_Type *Menu* anytime to go back to main menu._
+_Type *Help* to talk to our team._"""
   
 
 COURSE_MEPF = """⚙️ *MEPF BIM Training*
@@ -73,7 +74,8 @@ https://bimsavvyacademy.com/courses
 _Rahul Sharma, 9876543210, rahul@gmail.com_
 
  
- _Type *Menu* anytime to go back to main menu._"""
+ _Type *Menu* anytime to go back to main menu._
+_Type *Help* to talk to our team._"""
 
 COURSE_WORKSHOP = """⚡ *BIM Workshops — Upcoming !*
 
@@ -89,7 +91,8 @@ COURSE_WORKSHOP = """⚡ *BIM Workshops — Upcoming !*
 *Example:*
 _Rahul Sharma, 9876543210, rahul@gmail.com_
 
-_Type *Menu* anytime to go back to main menu._"""
+_Type *Menu* anytime to go back to main menu._
+_Type *Help* to talk to our team._"""
 
 def confirm_details_received(name: str) -> str:
     return f"""✅ Thank you, *{name}!*
@@ -114,7 +117,8 @@ After payment reply with your *UTR number* or send a *payment screenshot*.
 📄 Privacy Policy: {s.privacy_policy_url}
 📄 Terms: {s.terms_url}
 
-_Type *Menu* anytime to go back to main menu._"""
+_Type *Menu* anytime to go back to main menu._
+_Type *Help* to talk to our team._"""
 
 def qr_caption() -> str:
     s = get_settings()
@@ -232,7 +236,8 @@ Here is our link, visit it: https://www.bimtrainingandprojects.com/design-projec
 *Example:*
 _Rahul Sharma, 9876543210, rahul@gmail.com_
 
-_Type *Menu* anytime to go back to main menu._"""
+_Type *Menu* anytime to go back to main menu._
+_Type *Help* to talk to our team._"""
 
 PROJECT_BIM_DETAILS = """📐 *BIM Projects — Coordination & Modelling*
 
@@ -249,7 +254,8 @@ Here is our link, visit it: https://www.bimtrainingandprojects.com/bim-projects
 *Example:*
 _Rahul Sharma, 9876543210, rahul@gmail.com, Mumbai India, I need BIM modelling for a commercial building_
 
-_Type *Menu* anytime to go back to main menu._"""
+_Type *Menu* anytime to go back to main menu._
+_Type *Help* to talk to our team._"""
 
 def project_received(name: str) -> str:
     return f"""✅ *Thank you, {name}!*
@@ -294,7 +300,8 @@ def seat_filling_alert(course: str, seats_left: int, last_date: str) -> str:
 Don't miss out on India's most practical BIM training!
 
 Reply *ENROLL* to secure your seat now 👇
-_Type *Menu* anytime to go back to main menu._"""
+_Type *Menu* anytime to go back to main menu._
+_Type *Help* to talk to our team._"""
 
 # ── CERTIFICATE ───────────────────────────────────────────────────────────────
 def certificate_ready(name: str, course: str) -> str:

@@ -36,9 +36,12 @@ async def _send(payload: dict) -> dict:
 
 def _ensure_menu_hint(text: str) -> str:
     # Convert text to lowercase just for the check so it catches "MENU" or "Menu"
-    if "type *menu*" in text.lower():
-        return text
-    return text.rstrip() + MENU_HINT
+    lower = text.lower()
+    if "type *menu*" in lower and "type *help*" in lower:
+        return text                          # Both already present — skip
+    if "type *menu*" in lower:
+        return text.rstrip() + "\n_Type *Help* to talk to our team._"  # Menu present, add Help only
+    return text.rstrip() + MENU_HINT         # Neither present — add both
 
 
 # ── 1. Plain text ─────────────────────────────────────────────────────────────
