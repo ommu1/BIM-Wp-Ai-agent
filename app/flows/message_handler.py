@@ -196,6 +196,17 @@ async def handle_incoming_message(
         return await route_from_main_menu(phone, button_id or list_id or "", text or "")
     
     if stage == "other_enquiry":
+        lower_text = (text or "").lower()
+        # If user types enroll/training keywords, redirect instead of saving to sheets
+        if any(w in lower_text for w in ["enroll", "enrol", "i want to enroll", "register", "join course"]):
+            return await start_enrollment(phone)
+        if any(w in lower_text for w in ["training", "course", "bim training"]):
+            from app.flows.training_flow import start_training_flow
+            return await start_training_flow(phone)
+        if any(w in lower_text for w in ["project", "design project", "bim project"]):
+            from app.flows.projects_flow import start_projects_flow
+            return await start_projects_flow(phone)
+
         import re
         name = ""
         phone_num = ""
