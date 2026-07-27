@@ -74,15 +74,33 @@ async def send_buttons(
             ]
         }
     }
-    
-    # Add optional components if they exist
-    if header_text:
-        interactive["header"] = {"type": "text", "text": header_text}
-    if footer_text:
-        interactive["footer"] = {"text": footer_text}
 
-    return await _send({"to": to, "type": "interactive", "interactive": interactive})
-    
+async def send_flow(
+    to: str,
+    flow_id: str,
+    flow_token: str,
+    body_text: str,
+    header_text: Optional[str] = None,
+    footer_text: Optional[str] = None,
+) -> dict:
+    interactive = {
+        "type": "flow",
+        "body": {"text": body_text},
+        "action": {
+            "name": "flow",
+            "parameters": {
+                "flow_message_version": "3",
+                "flow_token": flow_token,
+                "flow_id": flow_id,
+                "flow_cta": "Fill Details",
+                "flow_action": "navigate",
+                "flow_action_payload": {
+                    "screen": "DETAILS_SCREEN"
+                }
+            }
+        }
+    }
+
     if header_text:
         interactive["header"] = {"type": "text", "text": header_text}
     if footer_text:
