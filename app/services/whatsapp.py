@@ -85,6 +85,13 @@ async def send_buttons(
         }
     }
 
+    if header_text:
+        interactive["header"] = {"type": "text", "text": header_text}
+    if footer_text:
+        interactive["footer"] = {"text": footer_text}
+
+    return await _send({"to": to, "type": "interactive", "interactive": interactive})
+
 async def send_flow(
     to: str,
     flow_id: str,
