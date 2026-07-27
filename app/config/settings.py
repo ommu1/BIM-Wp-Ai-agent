@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     # ADD THIS LINE TO FIX THE ERROR
     whatsapp_business_account_id: str = "891235163757950" 
     verify_token: str = "bim_training_webhook_secret_2026"
+    flow_id_enquiry: str = "177611164024118"
 
     # OpenAI
     openai_api_key: str = "" 
