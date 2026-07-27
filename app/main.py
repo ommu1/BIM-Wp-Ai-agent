@@ -5,6 +5,7 @@
 #  Deploy: Railway.app or Render.com
 # ═══════════════════════════════════════════════════════════════════════════════
 
+import asyncio
 from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import Optional
@@ -123,6 +124,41 @@ async def process_message(message: dict):
         elif itype == "list_reply":
             list_id = interactive["list_reply"]["id"]
             text    = interactive["list_reply"]["title"]
+
+        elif itype == "nfm_reply":
+            nfm_reply = interactive.get("nfm_reply", {})
+            response_json_str = nfm_reply.get("response_json", "{}")
+            import json
+            try:
+                flow_data = json.loads(response_json_str) if isinstance(response_json_str, str) else response_json_str
+            except Exception:
+                flow_data = {}
+            
+            name = flow_data.get("name", "")
+            email = flow_data.get("email", "")
+            
+            # Log submission to Google Sheets using your existing helper
+            try:
+                from app.services import sheets
+                await asyncio.to_thread(sheets.log_other_enquiry, {
+                    "phone": phone,
+                    "name": name,
+                    "email": email,
+                    "address": flow_data.get("address", ""),
+                    "description": str(flow_data),
+                })
+                logger.info(f"Flow submission saved to sheets | phone={phone}")
+            except Exception as e:
+                logger.error(f"Error saving flow submission to sheets: {e}")
+
+            # Send confirmation thank-you message back to user
+            await wa.send_text(
+                phone,
+                f"*Thank you{', ' + name if name else ''}!* ✅\n\n"
+                "Your details have been successfully submitted. Our team will review them and get back to you shortly.\n\n"
+                "_Type *Menu* anytime to go back to the main menu._"
+            )
+            return 
 
     elif msg_type == "image":
         media_id = message.get("image", {}).get("id")
