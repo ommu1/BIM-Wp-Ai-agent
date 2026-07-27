@@ -28,17 +28,27 @@ async def handle_course_selection(phone: str, list_id: str, text: str):
     lower = text.lower()
     
     if list_id == "arch_bim" or any(w in lower for w in ["architect", "structure", "interior", "id bim"]):
+        from app.config.settings import get_settings
+        import uuid
+        s = get_settings()
         session_store.reset(phone)
+        await wa.send_text(phone, M.COURSE_ARCH)
         await wa.send_buttons(
             phone,
-            M.COURSE_ARCH,
+            "Choose an option below:",
             [
-                {"id": "brochure",   "label": "📄 Download Brochure"},
-                {"id": "curriculum", "label": "📋 Course Curriculum"},
-                {"id": "enroll_now", "label": "✅ Enroll Now"},
+                {"id": "brochure",    "label": "📄 Download Brochure"},
+                {"id": "curriculum",  "label": "📋 Course Curriculum"},
+                {"id": "enroll_now",  "label": "✅ Enroll Now"},
             ]
         )
-        session_store.update(phone, stage="collecting_details", sub_flow="arch_bim")
+        await wa.send_flow(
+            phone,
+            flow_id=s.flow_id_enquiry,
+            flow_token=str(uuid.uuid4()),
+            body_text="Or tap below to share your details and get fee and batch information directly:"
+        )
+        session_store.update(phone, stage="awaiting_flow", sub_flow="arch_bim")
 
     elif list_id == "mepf_bim" or any(w in lower for w in ["mepf", "mep", "mechanical", "electrical", "plumbing"]):
         session_store.reset(phone)
