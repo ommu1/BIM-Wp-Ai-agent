@@ -23,6 +23,16 @@ async def _send(payload: dict) -> dict:
     async with httpx.AsyncClient(timeout=15.0) as client:
         try:
             res = await client.post(url, json=payload, headers=headers)
+            
+            # --- AGGRESSIVE ERROR LOGGING ---
+            if res.status_code != 200:
+                print("\n" + "="*50)
+                print(f"🚨 META API REJECTED THE MESSAGE 🚨")
+                print(f"STATUS: {res.status_code}")
+                print(f"ERROR DETAILS: {res.text}")
+                print("="*50 + "\n")
+            # --------------------------------
+            
             res.raise_for_status()
             logger.debug(f"WA sent | to={payload.get('to')} type={payload.get('type')}")
             return res.json()
