@@ -126,39 +126,96 @@ async def process_message(message: dict):
             text    = interactive["list_reply"]["title"]
 
         elif itype == "nfm_reply":
+            import json
             nfm_reply = interactive.get("nfm_reply", {})
             response_json_str = nfm_reply.get("response_json", "{}")
-            import json
             try:
                 flow_data = json.loads(response_json_str) if isinstance(response_json_str, str) else response_json_str
             except Exception:
                 flow_data = {}
-            
-            name = flow_data.get("name", "")
-            email = flow_data.get("email", "")
-            
-            # Log submission to Google Sheets using your existing helper
+
+            logger.info(f"Flow submission received | phone={phone} | data={flow_data}")
+
+            # Extract fields — matches your Flow JSON field names
+            name       = flow_data.get("full_name", "") or flow_data.get("name", "")
+            phone_num  = flow_data.get("phone_number", "") or flow_data.get("phone", "")
+            email      = flow_data.get("email", "")
+            city       = flow_data.get("city", "")
+            profession = flow_data.get("profession", "")
+            college    = flow_data.get("college", "")
+
+            # Get session to know which flow/course
+            from app.utils.session_store import session_store
+            session = session_store.get_or_create(phone)
+            sub_flow = session.sub_flow or ""
+
             try:
                 from app.services import sheets
-                await asyncio.to_thread(sheets.log_other_enquiry, {
-                    "phone": phone,
-                    "name": name,
-                    "email": email,
-                    "address": flow_data.get("address", ""),
-                    "description": str(flow_data),
-                })
-                logger.info(f"Flow submission saved to sheets | phone={phone}")
-            except Exception as e:
-                logger.error(f"Error saving flow submission to sheets: {e}")
 
-            # Send confirmation thank-you message back to user
-            await wa.send_text(
-                phone,
-                f"*Thank you{', ' + name if name else ''}!* ✅\n\n"
-                "Your details have been successfully submitted. Our team will review them and get back to you shortly.\n\n"
-                "_Type *Menu* anytime to go back to the main menu._"
+                if sub_flow == "workshop":
+                    await asyncio.to_thread(sheets.log_workshop_lead, {
+                        "phone": phone,
+                        "name": name,
+                        "user_phone": phone_num,
+                        "email": email,
+                        "address": city,
+                        "profession": profession,
+                        "college": college,
+                    })
+                elif sub_flow == "mepf_bim":
+                    await asyncio.to_thread(sheets.log_mepf_lead, {
+                        "phone": phone,
+                        "name": name,
+                        "user_phone": phone_num,
+                        "email": email,
+                        "address": city,
+                        "profession": profession,
+                        "college": college,
+                    })
+                elif sub_flow in ("Design Projects", "BIM Projects"):
+                    await asyncio.to_thread(sheets.log_project_lead, {
+                        "phone": phone,
+                        "name": name,
+                        "email": email,
+                        "address": city,
+                        "description": f"Profession: {profession} | College: {college}",
+                        "project_type": sub_flow,
+                    })
+                else:
+                    # Default — Architecture & Structure
+                    await asyncio.to_thread(sheets.log_training_lead, {
+                        "phone": phone,
+                        "name": name,
+                        "user_phone": phone_num,
+                        "email": email,
+                        "address": city,
+                        "profession": profession,
+                        "college": college,
+                        "course_interest": "Architecture & Structure",
+                    })
+
+                logger.info(f"Flow submission saved | phone={phone} sub_flow={sub_flow}")
+
+            except Exception as e:
+                logger.error(f"Flow submission sheet error | {e}")
+
+            # Send thank you + action buttons
+            from app.services import whatsapp as wa2
+            from app.config import messages as M2
+            session_store.update(phone,
+                stage="post_details",
+                data={"name": name, "email": email, "address": city}
             )
-            return 
+            await wa2.send_buttons(
+                phone,
+                M2.confirm_details_received(name),
+                [
+                    {"id": "enroll_now", "label": "✅ Enroll Now"},
+                    {"id": "brochure",   "label": "📄 Get Brochure"},
+                    {"id": "ask_human",  "label": "📞 Talk to Trainer"},
+                ],
+            )
+            return
 
     elif msg_type == "image":
         media_id = message.get("image", {}).get("id")
