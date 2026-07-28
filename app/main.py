@@ -211,7 +211,6 @@ async def process_message(message: dict):
                 M2.confirm_details_received(name),
                 [
                     {"id": "enroll_now", "label": "✅ Enroll Now"},
-                    {"id": "brochure",   "label": "📄 Get Brochure"},
                     {"id": "ask_human",  "label": "📞 Talk to Trainer"},
                 ],
             )
