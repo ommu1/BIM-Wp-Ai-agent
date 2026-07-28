@@ -18,14 +18,32 @@ async def handle_project_selection(phone: str, button_id: str, text: str):
     lower = (text or "").lower()
 
     if button_id == "arch_project" or any(w in lower for w in ["architect", "interior", "design"]):
+        from app.config.settings import get_settings
+        import uuid
+        s = get_settings()
         session_store.reset(phone)
         await wa.send_text(phone, M.PROJECT_ARCH_DETAILS)
-        session_store.update(phone, stage="collecting_project_details", sub_flow="Design Projects")
+        await wa.send_flow(
+            phone,
+            flow_id=s.flow_id_enquiry,
+            flow_token=str(uuid.uuid4()),
+            body_text="Tap below to share your project details and our team will contact you:"
+        )
+        session_store.update(phone, stage="awaiting_flow", sub_flow="Design Projects")
 
     elif button_id == "bim_project" or any(w in lower for w in ["bim", "modelling", "clash", "coordination"]):
+        from app.config.settings import get_settings
+        import uuid
+        s = get_settings()
         session_store.reset(phone)
         await wa.send_text(phone, M.PROJECT_BIM_DETAILS)
-        session_store.update(phone, stage="collecting_project_details", sub_flow="BIM Projects")
+        await wa.send_flow(
+            phone,
+            flow_id=s.flow_id_enquiry,
+            flow_token=str(uuid.uuid4()),
+            body_text="Tap below to share your project details and our team will contact you:"
+        )
+        session_store.update(phone, stage="awaiting_flow", sub_flow="BIM Projects")
 
     else:
         await start_projects_flow(phone)

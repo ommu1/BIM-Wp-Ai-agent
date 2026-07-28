@@ -51,15 +51,33 @@ async def handle_course_selection(phone: str, list_id: str, text: str):
         session_store.update(phone, stage="awaiting_flow", sub_flow="arch_bim")
 
     elif list_id == "mepf_bim" or any(w in lower for w in ["mepf", "mep", "mechanical", "electrical", "plumbing"]):
+        from app.config.settings import get_settings
+        import uuid
+        s = get_settings()
         session_store.reset(phone)
         await wa.send_text(phone, M.COURSE_MEPF)
-        session_store.update(phone, stage="collecting_details", sub_flow="mepf_bim")
+        await wa.send_flow(
+            phone,
+            flow_id=s.flow_id_enquiry,
+            flow_token=str(uuid.uuid4()),
+            body_text="Tap below to share your details and get fee and batch information:"
+        )
+        session_store.update(phone, stage="awaiting_flow", sub_flow="mepf_bim")
 
     elif list_id == "workshop" or any(w in lower for w in ["workshop", "free", "event"]):
+        from app.config.settings import get_settings
+        import uuid
+        s = get_settings()
         session_store.reset(phone)
         await wa.send_text(phone, M.COURSE_WORKSHOP)
-        session_store.update(phone, stage="collecting_details", sub_flow="workshop")
-
+        await wa.send_flow(
+            phone,
+            flow_id=s.flow_id_enquiry,
+            flow_token=str(uuid.uuid4()),
+            body_text="Tap below to register for the workshop:"
+        )
+        session_store.update(phone, stage="awaiting_flow", sub_flow="workshop")
+        
     elif list_id == "brochure" or any(w in lower for w in ["brochure", "pdf", "download"]):
         await send_brochure(phone)
 
