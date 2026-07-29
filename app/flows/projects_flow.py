@@ -27,7 +27,7 @@ async def handle_project_selection(phone: str, button_id: str, text: str):
             phone,
             flow_id=s.flow_id_enquiry,
             flow_token=str(uuid.uuid4()),
-            body_text="Tap below to share your project details and our team will contact you:"
+            body_text="Tap below to share your project details"
         )
         session_store.update(phone, stage="awaiting_flow", sub_flow="Design Projects")
 
@@ -41,7 +41,7 @@ async def handle_project_selection(phone: str, button_id: str, text: str):
             phone,
             flow_id=s.flow_id_enquiry,
             flow_token=str(uuid.uuid4()),
-            body_text="Tap below to share your project details and our team will contact you:"
+            body_text="Tap below to share your project details"
         )
         session_store.update(phone, stage="awaiting_flow", sub_flow="BIM Projects")
 
