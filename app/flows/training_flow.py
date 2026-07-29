@@ -46,7 +46,7 @@ async def handle_course_selection(phone: str, list_id: str, text: str):
             phone,
             flow_id=s.flow_id_enquiry,
             flow_token=str(uuid.uuid4()),
-            body_text="Or tap below to share your details and get fee and batch information directly:"
+            body_text="Tap below to share your details"
         )
         session_store.update(phone, stage="awaiting_flow", sub_flow="arch_bim")
 
@@ -60,7 +60,7 @@ async def handle_course_selection(phone: str, list_id: str, text: str):
             phone,
             flow_id=s.flow_id_enquiry,
             flow_token=str(uuid.uuid4()),
-            body_text="Tap below to share your details and get fee and batch information:"
+            body_text="Tap below to share your details"
         )
         session_store.update(phone, stage="awaiting_flow", sub_flow="mepf_bim")
 
