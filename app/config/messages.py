@@ -80,9 +80,7 @@ _Type *Help* to talk to our team._"""
 def confirm_details_received(name: str) -> str:
     return f"""✅ Thank you, *{name}!*
 
-Your enquiry has been noted. Our team member will call or WhatsApp you with complete fee and batch details.
-
-_Reply *ENROLL* anytime to start the enrollment process._"""
+Your enquiry has been noted. Our team member will call or WhatsApp you with complete fee and batch details."""
 
 def enrollment_confirm(name: str, course: str, fee: str, batch_date: str) -> str:
     s = get_settings()
