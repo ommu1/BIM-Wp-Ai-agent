@@ -122,9 +122,11 @@ def log_project_lead(data: Dict[str, Any]) -> bool:
             data.get("email", ""),
             data.get("phone", ""),
             data.get("project_type", "General"),
-            data.get("description", ""),
+            data.get("profession", ""),
+            data.get("college", "") or data.get("college/company", ""),
             "New Lead",
         ]
+        
         logger.info(f"Project lead data | desc={data.get('description', 'EMPTY')} | keys={list(data.keys())}")
         ws.append_row(row, value_input_option="USER_ENTERED")
         logger.info(f"Project lead logged | phone={data.get('phone')}")
