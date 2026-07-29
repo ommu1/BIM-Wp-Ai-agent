@@ -1,5 +1,6 @@
 # app/flows/projects_flow.py
 import asyncio
+import json
 from app.services import whatsapp as wa
 from app.services import sheets, ai as ai_svc
 from app.config import messages as M
@@ -53,6 +54,29 @@ async def handle_project_details(phone: str, text: str):
     import re
     session = session_store.get_or_create(phone)
     new_data = dict(session.data)
+    # 1. Try to read as WhatsApp Flow Form (JSON)
+    try:
+        flow_data = json.loads(text)
+        is_flow = isinstance(flow_data, dict)
+    except Exception:
+        is_flow = False
+        flow_data = {}
+
+    if is_flow:
+        # Extract data directly from the Form!
+        new_data["name"] = flow_data.get("name", "")
+        new_data["email"] = flow_data.get("email", "")
+        new_data["user_phone"] = flow_data.get("phone", "")
+        new_data["address"] = flow_data.get("address", "") or flow_data.get("city", "")
+        new_data["profession"] = flow_data.get("profession", "") or flow_data.get("Profession", "")
+        new_data["college"] = flow_data.get("college", "") or flow_data.get("company", "") or flow_data.get("College/Company", "")
+        new_data["description"] = flow_data.get("description", "")
+    else:
+        # 2. Try to parse from free text
+        # Extract name (assumed to be the first part before a comma or newline)
+        name_match = re.match(r'^\s*([^,\n]+)', text or "")
+        if name_match:
+            new_data["name"] = name_match.group(1).strip()
 
     # Extract email
     email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', text or "")
