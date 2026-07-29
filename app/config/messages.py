@@ -51,12 +51,6 @@ COURSE_ARCH = """🏛️ *BIM Training for Architecture, Structure & Interior De
 ✅ WhatsApp group support throughout
 ✅ Certificate of Completion
 
-*Please share your details in this format:*
-
-Name, Phone, Email 
-
-*Example:*
-_Rahul Sharma, 9876543210, rahul@gmail.com_
 
 _Type *Menu* anytime to go back to main menu._
 _Type *Help* to talk to our team._"""
@@ -66,12 +60,6 @@ COURSE_MEPF = """⚙️ *MEPF BIM Training*
 
 For BIM MEP Trainings (For MEP Engineers) visit our MEP Training Partner Website :
 https://bimsavvyacademy.com/courses
-
-*Please share your details in exact format:*
- Name, Phone number, Email address *
-
- *Example:*
-_Rahul Sharma, 9876543210, rahul@gmail.com_
 
  
  _Type *Menu* anytime to go back to main menu._
@@ -85,11 +73,6 @@ COURSE_WORKSHOP = """⚡ *BIM Workshops — Upcoming !*
    To know more about our upcoming workshops and to register, please visit:
 🔗 https://www.bimtrainingandprojects.com/workshops
 
-*To register, please share in exact format:*
-📝 *Name, Phone, Email *
-
-*Example:*
-_Rahul Sharma, 9876543210, rahul@gmail.com_
 
 _Type *Menu* anytime to go back to main menu._
 _Type *Help* to talk to our team._"""
@@ -230,11 +213,6 @@ PROJECT_ARCH_DETAILS = """🏛️ *Architecture & Interior Design Projects*
 
 Here is our link, visit it: https://www.bimtrainingandprojects.com/design-projects
 
-*To get a quote, please share your details in exact format:*
-📝 _Name, Phone Number, Email_ 
- 
-*Example:*
-_Rahul Sharma, 9876543210, rahul@gmail.com_
 
 _Type *Menu* anytime to go back to main menu._
 _Type *Help* to talk to our team._"""
@@ -248,11 +226,6 @@ PROJECT_BIM_DETAILS = """📐 *BIM Projects — Coordination & Modelling*
 
 Here is our link, visit it: https://www.bimtrainingandprojects.com/bim-projects
 
-*Please share your details in the exact format *
-📝 _Name, Phone Number, Email _
-
-*Example:*
-_Rahul Sharma, 9876543210, rahul@gmail.com, Mumbai India, I need BIM modelling for a commercial building_
 
 _Type *Menu* anytime to go back to main menu._
 _Type *Help* to talk to our team._"""
