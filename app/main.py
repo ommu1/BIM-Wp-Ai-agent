@@ -172,6 +172,16 @@ async def process_message(message: dict):
                         "profession": profession,
                         "college": college,
                     })
+
+                elif sub_flow == "other_enquiry":
+                    await asyncio.to_thread(sheets.log_other_enquiry, {
+                        "phone": phone,
+                        "name": name,
+                        "email": email,
+                        "address": city,
+                        "description": f"Profession: {profession} | College: {college}",
+                    })
+                        
                 elif sub_flow in ("Design Projects", "BIM Projects"):
                     await asyncio.to_thread(sheets.log_project_lead, {
                         "phone": phone,

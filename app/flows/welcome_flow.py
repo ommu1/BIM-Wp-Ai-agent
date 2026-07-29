@@ -32,15 +32,22 @@ async def route_from_main_menu(phone: str, button_id: str, text: str):
         return await start_student_flow(phone)
 
     if button_id == "other" or any(w in lower for w in ["other", "enquiry", "callback", "general"]):
+        from app.config.settings import get_settings
+        import uuid
+        s = get_settings()
+        session_store.reset(phone)
         await wa.send_text(
             phone,
-            "Please share your details and our team will call you back:\n\n"
-            "Name, Phone Number, Email\n\n"
-             "*Example:*\n"
-            "_Rahul Sharma, 9876543210, rahul@gmail.com_\n\n"
+            "Please share your details and our team will call you back.\n\n"
             "_Type *Menu* anytime to go back to main menu._"
         )
-        session_store.update(phone, stage="other_enquiry")
+        await wa.send_flow(
+            phone,
+            flow_id=s.flow_id_enquiry,
+            flow_token=str(uuid.uuid4()),
+            body_text="Tap below to fill in your details:"
+        )
+        session_store.update(phone, stage="other_enquiry", sub_flow="other_enquiry")
         return
 
     if any(w in lower for w in ["human", "call me", "talk to", "speak", "person", "agent", "help"]):
