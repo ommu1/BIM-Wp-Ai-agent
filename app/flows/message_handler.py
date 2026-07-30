@@ -1,4 +1,3 @@
-# app/flows/message_handler.py
 # Central router — every incoming WhatsApp message passes through here
 
 import asyncio
@@ -12,8 +11,7 @@ from app.utils.logger import logger
 from app.flows.welcome_flow  import handle_welcome, route_from_main_menu
 from app.flows.training_flow import (
     start_training_flow, handle_course_selection,
-    handle_details_collection, handle_post_details,
-    start_enrollment, handle_utr_submission, send_brochure,
+    handle_details_collection, handle_post_details, send_brochure,
 )
 from app.flows.projects_flow import (
     start_projects_flow, handle_project_selection,
@@ -77,11 +75,6 @@ async def handle_incoming_message(
             "• *Help* — Talk to our team"
         )
 
-    if lower in ("hi", "hello", "start", "menu", "bim", "hey", ""):
-        return await handle_welcome(phone)
-    
-        
-
     if lower in ("restart", "reset", "main menu", "back to menu"):
         session_store.reset(phone)
         return await handle_welcome(phone)
@@ -111,7 +104,6 @@ async def handle_incoming_message(
             "✅ *Noted! Our team has been notified.*\n\n"
             "Someone from BIM Training & Projects will contact you "
             "on this number personally.\n\n"
-            
         )
         await wa.send_text(
             s.admin_phone,
@@ -168,9 +160,8 @@ async def handle_incoming_message(
             from app.flows.student_flow import handle_student_menu
             return await handle_student_menu(phone, btn, text or "")
             
-        # Try cross_flow for remaining buttons like enroll_now, brochure, back_main, ask_human
+        # Try cross_flow for remaining buttons
         btn_map = {
-            "enroll_now":       lambda: start_enrollment(phone),
             "brochure":         lambda: send_brochure(phone),
             "back_main":        lambda: handle_welcome(phone),
             "claim_cert":       lambda: handle_claim_certificate(phone),
@@ -178,7 +169,6 @@ async def handle_incoming_message(
             "review_google":    lambda: wa.send_text(phone, "⭐ *Leave a Google Review:*\nhttps://g.page/r/YOUR_LINK\n\nThank you!"),
             "review_linkedin":  lambda: wa.send_text(phone, "💼 *Connect on LinkedIn:*\nhttps://linkedin.com/company/bim-training-and-projects\n\nThank you!"),
             "review_skip":      lambda: wa.send_text(phone, "No problem! Feel free to reach out anytime.") ,
-            "paid_utr":         lambda: handle_utr_submission(phone, text or ""),
             "contact_us":       lambda: wa.send_text(phone, "📞 *Contact Us*\n\n📞 *+91 72178 22883*\n📧 *askus@bimtrainingandprojects.com*"),
         }
         if btn in btn_map and btn_map[btn]:
@@ -197,9 +187,6 @@ async def handle_incoming_message(
     
     if stage == "other_enquiry":
         lower_text = (text or "").lower()
-        # If user types enroll/training keywords, redirect instead of saving to sheets
-        if any(w in lower_text for w in ["enroll", "enrol", "i want to enroll", "register", "join course"]):
-            return await start_enrollment(phone)
         if any(w in lower_text for w in ["training", "course", "bim training"]):
             from app.flows.training_flow import start_training_flow
             return await start_training_flow(phone)
@@ -245,8 +232,6 @@ async def handle_incoming_message(
             "description": description,
         })
 
-    
-
         await wa.send_text(
             phone,
             f"*Thank you{', ' + name if name else ''}!* ✅\n\n"
@@ -281,16 +266,6 @@ async def handle_incoming_message(
         return await handle_details_collection(phone, text or "")
     if stage == "post_details":
         return await handle_post_details(phone, button_id or "", text or "")
-    if stage == "enrollment_qr":
-        return await start_enrollment(phone)
-    if stage == "awaiting_utr":
-        return await handle_utr_submission(phone, text or "")
-    if stage == "payment_submitted":
-        return await wa.send_text(phone,
-            "⏳ *Payment verification in progress.*\n\n"
-            "You'll receive your Student ID once confirmed.\n\n"
-            "Questions?  Reply *HELP* or contact us at:\n\n"
-        )
 
     # Projects
     if stage == "projects_menu":
@@ -322,7 +297,6 @@ async def handle_cross_flow(phone: str, btn: str, text: str, session):
     lower = text.lower()
 
     btn_map = {
-        "enroll_now":       lambda: start_enrollment(phone),
         "brochure":         lambda: send_brochure(phone),
         "back_main":        lambda: handle_welcome(phone),
         "claim_cert":       lambda: handle_claim_certificate(phone),
@@ -330,7 +304,6 @@ async def handle_cross_flow(phone: str, btn: str, text: str, session):
         "review_google":    lambda: wa.send_text(phone, "⭐ *Leave a Google Review:*\nhttps://g.page/r/YOUR_LINK\n\nThank you!"),
         "review_linkedin":  lambda: wa.send_text(phone, "💼 *Connect on LinkedIn:*\nhttps://linkedin.com/company/bim-training-and-projects\n\nThank you!"),
         "review_skip":      lambda: wa.send_text(phone, "No problem! Feel free to reach out anytime.") ,
-        "paid_utr":         lambda: handle_utr_submission(phone, text),
         "contact_us":       lambda: wa.send_text(phone, "📞 *Contact Us*\n\n📞 *+91 72178 22883*\n📧 *askus@bimtrainingandprojects.com*"),
         "ask_human":        None,  # handled below
     }
@@ -343,8 +316,6 @@ async def handle_cross_flow(phone: str, btn: str, text: str, session):
         session_store.update(phone, stage="human_requested", human_mode=True)
         return
 
-    if any(w in lower for w in ["enroll", "enrol"]):
-        return await start_enrollment(phone)
     if "brochure" in lower:
         return await send_brochure(phone)
 
@@ -359,8 +330,7 @@ async def handle_cross_flow(phone: str, btn: str, text: str, session):
     if any(w in lower for w in ["hi", "hello", "hey", "start"]):
         return await handle_welcome(phone)
        
-# Instead of calling ai_svc, we send a helpful default message
-    
+    # Instead of calling ai_svc, we send a helpful default message
     await wa.send_text(
         phone,
         "*Not sure what you mean!*\n\n"
