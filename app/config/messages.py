@@ -54,7 +54,7 @@ COURSE_ARCH = """🏛️ *BIM Training for Architecture, Structure & Interior De
 
 _Type *Menu* anytime to go back to main menu._
 _Type *Help* to talk to our team._"""
-  
+
 
 COURSE_MEPF = """⚙️ *MEPF BIM Training*
 
@@ -82,45 +82,6 @@ def confirm_details_received(name: str) -> str:
 
 Your enquiry has been noted. Our team member will call or WhatsApp you with complete fee and batch details."""
 
-def enrollment_confirm(name: str, course: str, fee: str, batch_date: str) -> str:
-    s = get_settings()
-    return f"""🎉 *Excellent, {name}!*
-
-Here are your enrollment details:
-
-*Course:* {course}
-*Batch Start:* {"To know about upcoming batches, visit: https://www.bimtrainingandprojects.com/batches-info"}
-
-Please download the payment details PDF below.
-After payment reply with your *UTR number* or send a *payment screenshot*.
-
-⚠️ By enrolling, you agree to our:
-📄 Privacy Policy: {s.privacy_policy_url}
-📄 Terms: {s.terms_url}
-
-_Type *Menu* anytime to go back to main menu._
-_Type *Help* to talk to our team._"""
-
-def qr_caption() -> str:
-    s = get_settings()
-    return f"""📲 *Scan to pay via UPI*
-
-🏦 UPI ID: {s.upi_id}
-👤 Account: {s.upi_name}
-
-_Works with GPay, PhonePe, Paytm, any UPI app_
-
-✉️ After payment, reply with your *UTR number* or send screenshot."""
-
-def utr_received(name: str, utr: str) -> str:
-    return f"""✅ *Payment received, {name}!*
-
-UTR: *{utr}*
-
-Our team will verify and confirm your payment.
-You'll receive your *Student ID* and welcome details once verified.
-
-_If you don't hear within hours, contact us at: 📧 *askus@bimtrainingandprojects.com*_"""
 
 def student_id_welcome(name: str, student_id: str, course: str, batch_date: str) -> str:
     return f"""🎊 *Welcome aboard, {name}!* 🏆
@@ -245,9 +206,8 @@ Hi *{name}*,
 
 Your *2nd installment of ₹{amount}* is due in *{day_str}* ({due_date}).
 
-_Scan the QR code to pay via UPI._
-
-After payment, reply with your *UTR number* or send a *payment screenshot* to confirm._"""
+Please contact us at:
+📧 *askus@bimtrainingandprojects.com*"""
 
 def session_reminder(name: str, course: str, date_time: str, zoom_link: str) -> str:
     return f"""🔔 *Class Reminder — Starting Soon!*
@@ -270,7 +230,6 @@ def seat_filling_alert(course: str, seats_left: int, last_date: str) -> str:
 
 Don't miss out on India's most practical BIM training!
 
-Reply *ENROLL* to secure your seat now 👇
 _Type *Menu* anytime to go back to main menu._
 _Type *Help* to talk to our team._"""
 

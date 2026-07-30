@@ -39,7 +39,6 @@ async def handle_course_selection(phone: str, list_id: str, text: str):
             [
                 {"id": "brochure",    "label": "📄 Download Brochure"},
                 {"id": "curriculum",  "label": "📋 Course Curriculum"},
-                {"id": "enroll_now",  "label": "✅ Enroll Now"},
             ]
         )
         await wa.send_flow(
@@ -104,8 +103,6 @@ async def handle_details_collection(phone: str, text: str):
         return await send_brochure(phone)
     if text == "Course Curriculum" or "curriculum" in lower_text:
         return await send_curriculum(phone)
-    if text == "Enroll Now" or "enroll" in lower_text:
-        return await start_enrollment(phone)
     if text == "Back to Menu" or lower_text == "back":
         from app.flows.welcome_flow import handle_welcome
         session_store.reset(phone)
@@ -263,10 +260,6 @@ async def handle_post_details(phone: str, button_id: str, text: str):
     lower = (text or "").lower()
     session = session_store.get_or_create(phone)
 
-    if button_id == "enroll_now" or any(w in lower for w in ["enroll", "enrol", "join", "pay", "register"]):
-        session_store.reset(phone)
-        return await start_enrollment(phone)
-
     if button_id == "brochure" or "brochure" in lower:
         session_store.reset(phone)
         return await send_brochure(phone)
@@ -300,87 +293,6 @@ async def handle_post_details(phone: str, button_id: str, text: str):
         "📧 *askus@bimtrainingandprojects.com*"
     )
 
-
-# ── ENROLLMENT: Show fee + send payment PDF ───────────────────────────────────
-async def start_enrollment(phone: str):
-    session = session_store.get_or_create(phone)
-    config  = await asyncio.to_thread(sheets.get_admin_config)
-
-    course_map = {
-        "arch_bim": {
-            "name":  "Architecture, Structure & ID BIM",
-            "fee":   config.get("arch_fee", "18000"),
-            "batch": config.get("arch_batch", "To know about upcoming batches, visit: https://www.bimtrainingandprojects.com/batches-info"),
-        },
-        "mepf_bim": {
-            "name":  "MEPF BIM Training",
-            "fee":   config.get("mepf_fee", "15000"),
-            "batch": config.get("mepf_batch", "To know about upcoming batches, visit: https://www.bimtrainingandprojects.com/batches-info"),
-        },
-        "workshop": {
-            "name":  "BIM Workshop",
-            "fee":   "0",
-            "batch": config.get("workshop_date", "Coming soon"),
-        },
-    }
-
-    course = course_map.get(session.sub_flow or "arch_bim", course_map["arch_bim"])
-    name   = session.data.get("name", "there")
-
-    session_store.update(phone, stage="enrollment_qr", enroll_course=course)
-
-    if course["fee"] == "0":
-        await wa.send_text(phone,
-            f"Thank you, *{name}!*\n\n"
-            "We have noted your interest in the BIM Workshop.\n\n"
-            "Our team will contact you with the workshop link and schedule shortly.\n\n"
-            "To know more visit:\n"
-            "www.bimtrainingandprojects.com/workshops\n\n"
-            "For queries, contact us at:\n"
-            "📧 *askus@bimtrainingandprojects.com*"
-         )
-        
-        await asyncio.to_thread(sheets.log_workshop_lead, {
-            "phone": phone, **session.data,
-        })
-        session_store.update(phone, stage="post_enrollment")
-        return
-
-    # Paid course — send confirmation + payment PDF
-    await wa.send_text(phone, M.enrollment_confirm(name, course["name"], course["fee"], course["batch"]))
-    await wa.send_document(
-        phone,
-        "https://www.bimtrainingandprojects.com/_files/ugd/215925_6b0b247a053346399aea90b768e7e78d.pdf",
-        "BIM_Payment_Details.pdf",
-        "Please download this PDF for payment details including UPI QR code and bank transfer details.\n\n"
-        "After payment reply with your *UTR number* or send a *payment screenshot*. "
-    )
-    session_store.update(phone, stage="awaiting_utr", awaiting_utr=True)
-
-
-# ── UTR Submission ────────────────────────────────────────────────────────────
-async def handle_utr_submission(phone: str, text: str):
-    session = session_store.get_or_create(phone)
-    utr  = ai_svc.extract_utr(text)
-    name = session.data.get("name", "Student")
-
-    await asyncio.to_thread(sheets.log_payment, {
-        "phone": phone,
-        "name":  name,
-        "email": session.data.get("email", ""),
-        "utr":   utr or "Screenshot/Pending",
-        "amount": (session.enroll_course or {}).get("fee", ""),
-        "installment": "1",
-    })
-
-    if utr:
-        await wa.send_text(phone, M.utr_received(name, utr))
-    else:
-        await wa.send_text(phone,
-            "Thank you! 📸 Our team will verify your payment and send your Student ID.\n\n"
-            "_For queries: reply HELP or contact us at: 📧 *askus@bimtrainingandprojects.com*_"
-        )
-    session_store.update(phone, stage="payment_submitted", awaiting_utr=False)
 
 
 # ── Send Brochure ─────────────────────────────────────────────────────────────
