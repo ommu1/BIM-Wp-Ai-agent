@@ -194,42 +194,57 @@ async def handle_incoming_message(
             from app.flows.projects_flow import start_projects_flow
             return await start_projects_flow(phone)
 
+        import json
         import re
-        name = ""
-        phone_num = ""
-        email = ""
-        address = ""
-        description = ""
+        
+        # 1. Try to read as WhatsApp Flow Form (JSON)
+        try:
+            flow_data = json.loads(text)
+            is_flow = isinstance(flow_data, dict)
+        except Exception:
+            is_flow = False
+            flow_data = {}
 
-        email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', text or "")
-        if email_match:
-            email = email_match.group(0)
-            text_clean = (text or "").replace(email_match.group(0), "")
+        if is_flow:
+            name = flow_data.get("name", "")
+            address = flow_data.get("city", "") or flow_data.get("address", "")
+            email = flow_data.get("email", "")
+            profession = flow_data.get("profession", "") or flow_data.get("Profession", "")
+            college = flow_data.get("college", "") or flow_data.get("company", "") or flow_data.get("Company", "") or flow_data.get("College/Company", "")
         else:
-            text_clean = text or ""
+            # 2. Fallback: Extract from regular text message
+            name = ""
+            address = ""
+            email = ""
+            profession = ""
+            college = ""
 
-        phone_match = re.search(r'\b\d{10,11}\b', text_clean)
-        if phone_match:
-            phone_num = phone_match.group(0)
-            text_clean = text_clean.replace(phone_match.group(0), "")
+            email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', text or "")
+            if email_match:
+                email = email_match.group(0)
+                text_clean = (text or "").replace(email_match.group(0), "")
+            else:
+                text_clean = text or ""
 
-        parts = [p.strip() for p in text_clean.split(",") if p.strip()]
-        if len(parts) >= 1:
-            name = parts[0]
-        if len(parts) >= 2:
-            address = parts[1]
-        if len(parts) > 2:
-            description = ", ".join(parts[2:])
-        else:
-            description = ""
+            phone_match = re.search(r'\b\d{10,11}\b', text_clean)
+            if phone_match:
+                text_clean = text_clean.replace(phone_match.group(0), "")
+
+            parts = [p.strip() for p in text_clean.split(",") if p.strip()]
+            if len(parts) >= 1: name = parts[0]
+            if len(parts) >= 2: address = parts[1]
+            if len(parts) >= 3: profession = parts[2]
+            if len(parts) > 3:  college = ", ".join(parts[3:])
 
         from app.services import sheets
         await asyncio.to_thread(sheets.log_other_enquiry, {
-            "phone":       phone,
             "name":        name,
-            "email":       email,
             "address":     address,
-            "description": description,
+            "email":       email,
+            "phone":       phone,
+            "profession":  profession,
+            "college":     college,
+            "company":     college,
         })
 
         await wa.send_text(

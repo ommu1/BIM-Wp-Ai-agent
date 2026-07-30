@@ -1,18 +1,33 @@
 # app/services/sheets.py
+from __future__ import annotations
+
 import json
 import random
 from datetime import datetime
-from typing import Optional, Dict, List, Any
-import gspread
-from google.oauth2.service_account import Credentials
+from typing import Optional, Dict, List, Any, TYPE_CHECKING
+try:
+    import gspread  # type: ignore[import]
+except ImportError:  # pragma: no cover - fallback for environments without gspread
+    gspread = None
+try:
+    from google.oauth2.service_account import Credentials  # type: ignore
+except Exception:  # pragma: no cover - fallback for environments without google libs
+    Credentials = None
+
+if TYPE_CHECKING:
+    from gspread import Client as GspreadClient  # type: ignore[import]
 from app.config.settings import get_settings
 from app.utils.logger import logger
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 
-def _get_client() -> gspread.Client:
+def _get_client() -> GspreadClient:
     s = get_settings()
     creds_dict = json.loads(s.google_service_account_json)
+    if gspread is None:
+        raise ImportError("gspread is not available; install gspread")
+    if Credentials is None:
+        raise ImportError("google.oauth2.service_account.Credentials is not available; install google-auth")
     creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
     return gspread.authorize(creds)
 
@@ -138,25 +153,32 @@ def log_project_lead(data: Dict[str, Any]) -> bool:
         return False 
     
 # ── LOG OTHER ENQUIRY ─────────────────────────────────────────────────────────
+from typing import Dict, Any
+
 def log_other_enquiry(data: Dict[str, Any]) -> bool:
     try:
         ws = _get_sheet("Other Enquiry")
         row = [
             now_str(),
             data.get("name", ""),
-            data.get("address", "") or data.get("city", ""),
             data.get("email", ""),
             data.get("phone", ""),
-            data.get("description", ""),
-            "New Enquiry",
+            data.get("address", "") or data.get("city", ""),
+            # 👇 Bulletproof checks for Profession and College/Company
+            data.get("profession", "") or data.get("Profession", ""),
+            data.get("college", "") or data.get("company", "") or data.get("College", "") or data.get("College/Company", ""),
+            "New Lead",
         ]
+
+        logger.info(f"Other enquiry data | keys={list(data.keys())}")
         ws.append_row(row, value_input_option="USER_ENTERED")
         logger.info(f"Other enquiry logged | phone={data.get('phone')}")
+
         return True
     except Exception as e:
-        logger.error(f"Failed to log other enquiry | {e}")
-        return False    
-
+        import traceback
+        logger.error(f"Failed to log other enquiry | {e} | {traceback.format_exc()}")
+        return False
 
 # ── ENROLL STUDENT ────────────────────────────────────────────────────────────
 def enroll_student(data: Dict[str, Any]) -> Optional[str]:
