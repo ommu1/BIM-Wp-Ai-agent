@@ -220,7 +220,6 @@ async def process_message(message: dict):
                 phone,
                 M2.confirm_details_received(name),
                 [
-                    {"id": "enroll_now", "label": "✅ Enroll Now"},
                     {"id": "ask_human",  "label": "📞 Talk to Trainer"},
                 ],
             )
@@ -256,35 +255,6 @@ async def process_message(message: dict):
 #  (Called from Google Apps Script after payment / certificate events)
 # ═══════════════════════════════════════════════════════════════════════════════
 
-class ConfirmPaymentRequest(BaseModel):
-    phone: str
-    name: str
-    email: str = ""
-    course: str
-    student_id: str
-    batch_date: str
-
-@app.post("/api/confirm-payment")
-async def confirm_payment(data: ConfirmPaymentRequest):
-    """
-    Called by Google Apps Script when you change status to "Payment Confirmed" in Sheet.
-    Sends Student ID + welcome message to the student.
-    """
-    from app.config.messages import student_id_welcome
-    try:
-        phone = data.phone.replace("+", "").replace(" ", "")
-        await wa.send_text(phone, student_id_welcome(
-            data.name, data.student_id, data.course, data.batch_date
-        ))
-        if data.email:
-            await mailer.send_enrollment_email(
-                data.email, data.name, data.course, data.student_id, data.batch_date
-            )
-        logger.info(f"Payment confirmed + Student ID sent | id={data.student_id}")
-        return {"success": True, "student_id": data.student_id}
-    except Exception as e:
-        logger.error(f"confirm-payment error | {e}")
-        raise HTTPException(status_code=500, detail=str(e))
 
 
 class CertificateRequest(BaseModel):
@@ -328,18 +298,6 @@ async def schedule_reminder(data: SessionReminderRequest):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-
-class BroadcastRequest(BaseModel):
-    phones: list[str]
-    course: str
-    seats_left: int
-    last_date: str
-
-@app.post("/api/broadcast-seats")
-async def broadcast_seats(data: BroadcastRequest):
-    """Send seat-filling alert to a list of phone numbers"""
-    await send_seat_filling_alert(data.phones, data.course, data.seats_left, data.last_date)
-    return {"success": True, "sent": len(data.phones)}
 
 
 # ── Health check ──────────────────────────────────────────────────────────────
