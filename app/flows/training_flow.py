@@ -1,5 +1,4 @@
-# app/flows/training_flow.py
-# Full BIM training enquiry → course selection → detail collection → enrollment → payment
+# Full BIM training enquiry → course selection → detail collection → payment stripped
 
 import asyncio
 from re import Match
@@ -25,17 +24,17 @@ async def start_training_flow(phone: str):
 
 # ── STEP 2: Handle course selection ──────────────────────────────────────────
 async def handle_course_selection(phone: str, list_id: str, text: str):
-    lower = text.lower()
+    lower = (text or "").lower()
+    from app.config.settings import get_settings
+    import uuid
+    s = get_settings()
     
     if list_id == "arch_bim" or any(w in lower for w in ["architect", "structure", "interior", "id bim"]):
-        from app.config.settings import get_settings
-        import uuid
-        s = get_settings()
         session_store.reset(phone)
         await wa.send_text(phone, M.COURSE_ARCH)
         await wa.send_buttons(
             phone,
-            "Choose an option below:",
+            "👇",
             [
                 {"id": "brochure",    "label": "📄 Download Brochure"},
                 {"id": "curriculum",  "label": "📋 Course Curriculum"},
@@ -50,11 +49,16 @@ async def handle_course_selection(phone: str, list_id: str, text: str):
         session_store.update(phone, stage="awaiting_flow", sub_flow="arch_bim")
 
     elif list_id == "mepf_bim" or any(w in lower for w in ["mepf", "mep", "mechanical", "electrical", "plumbing"]):
-        from app.config.settings import get_settings
-        import uuid
-        s = get_settings()
         session_store.reset(phone)
         await wa.send_text(phone, M.COURSE_MEPF)
+        await wa.send_buttons(
+            phone,
+            "👇",
+            [
+                {"id": "brochure",    "label": "📄 Download Brochure"},
+                {"id": "curriculum",  "label": "📋 Course Curriculum"},
+            ]
+        )
         await wa.send_flow(
             phone,
             flow_id=s.flow_id_enquiry,
@@ -64,9 +68,6 @@ async def handle_course_selection(phone: str, list_id: str, text: str):
         session_store.update(phone, stage="awaiting_flow", sub_flow="mepf_bim")
 
     elif list_id == "workshop" or any(w in lower for w in ["workshop", "free", "event"]):
-        from app.config.settings import get_settings
-        import uuid
-        s = get_settings()
         session_store.reset(phone)
         await wa.send_text(phone, M.COURSE_WORKSHOP)
         await wa.send_flow(
@@ -95,6 +96,8 @@ async def handle_course_selection(phone: str, list_id: str, text: str):
 
 # ── STEP 3: Collect lead details ─────────────────────────────────────────────
 async def handle_details_collection(phone: str, text: str):
+    import json
+    import re
     session = session_store.get_or_create(phone)
 
     # Handle button taps first
@@ -108,107 +111,65 @@ async def handle_details_collection(phone: str, text: str):
         session_store.reset(phone)
         return await handle_welcome(phone)
     
-    import re
     # Start fresh — don't carry over data from other flows
     new_data = {}
     if session.flow == "training":
         new_data = dict(session.data)
 
-    # Extract email
-    email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', text)
-    if email_match:
-        new_data["email"] = email_match.group(0)
-        text_clean = text.replace(email_match.group(0), "")
+    # 1. Try to read as WhatsApp Flow Form (JSON)
+    try:
+        flow_data = json.loads(text)
+        is_flow = isinstance(flow_data, dict)
+    except Exception:
+        is_flow = False
+        flow_data = {}
+
+    if is_flow:
+        new_data["name"] = flow_data.get("name", "")
+        new_data["email"] = flow_data.get("email", "")
+        new_data["user_phone"] = flow_data.get("phone", "")
+        new_data["address"] = flow_data.get("address", "") or flow_data.get("city", "")
+        new_data["profession"] = flow_data.get("profession", "") or flow_data.get("Profession", "")
+        new_data["college"] = flow_data.get("college", "") or flow_data.get("company", "") or flow_data.get("College/Company", "")
+        new_data["experience"] = flow_data.get("experience", "")
+        new_data["description"] = flow_data.get("description", "")
     else:
-        text_clean = text
-
-    # Extract phone (10 or 11 digits)
-    phone_match = re.search(r'\b\d{10,11}\b', text_clean)
-    if phone_match:
-        new_data["user_phone"] = phone_match.group(0)
-        text_clean = text_clean.replace(phone_match.group(0), "")
-
-    # Extract experience (number + year or just a single digit)
-    exp_match: Match[str] | None = re.search(r'\b(\d+)\s*(?:year|yr|years|yrs)?\b', text_clean, re.IGNORECASE)
-
-   # Step 3 — Clean up and split by comma OR newline
-    text_clean = re.sub(r'\s+', ' ', text_clean).strip()
-    text_clean = re.sub(r',\s*,', ',', text_clean)  # remove double commas
-    parts = [p.strip() for p in re.split(r'[,\n]', text_clean) if p.strip()]
-
-    unassigned = []
-    for part in parts:
-        low = part.lower()
-
-        # Skip very short parts
-        if len(part) < 2:
-            continue
-
-
-        # Detect experience
-        if re.search(r'^\d+$', part.strip()) or re.search(r'\d+\s*(year|yr|years|yrs)', low):
-            if not new_data.get("experience"):
-                new_data["experience"] = part.strip()
-
-        # Detect profession
-        elif any(w in low for w in ["student", "working professional", "professional", "freelancer",
-                                     "architect", "engineer", "designer", "fresher", "employed"]):
-            if not new_data.get("profession"):
-                new_data["profession"] = part.strip()
-
-        # Detect college/company
-        elif any(w in low for w in ["university", "college", "institute", "iit", "nit", "bits",
-                                     "pvt", "ltd", "technologies", "solutions", "school", "academy",
-                                     "galgotias", "amity", "bennett", "sharda", "inc", "corp", "group",
-                                     "enterprises", "consultants", "services", "systems", "software",
-                                     "engineering", "construction", "developers", "studios"]):
-            if not new_data.get("college"):
-                new_data["college"] = part.strip()
-
-        # Detect address (city/country keywords)
-        elif any(w in low for w in ["india", "noida", "delhi", "mumbai", "bangalore", "bengaluru",
-                                     "hyderabad", "chennai", "pune", "kolkata", "dubai", "uk", "usa",
-                                     "canada", "australia", "singapore", "nepal", "uae", "london",
-                                     "greater noida", "gurgaon", "gurugram", "faridabad", "lucknow",
-                                     "jaipur", "ahmedabad", "surat", "bhopal", "indore"]):
-            if not new_data.get("address"):
-                new_data["address"] = part.strip()
-
+        # 2. Fallback: Extract from regular text message
+        email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', text)
+        if email_match:
+            new_data["email"] = email_match.group(0)
+            text_clean = text.replace(email_match.group(0), "")
         else:
-            unassigned.append(part.strip())
+            text_clean = text
 
-    # First unassigned = name, second = address fallback
-    for part in unassigned:
-        if not new_data.get("name") and len(part.split()) <= 5:
-            new_data["name"] = part.strip()
-        elif not new_data.get("address"):
-            new_data["address"] = part.strip()
-        elif not new_data.get("college"):
-            new_data["college"] = part.strip() 
+        phone_match = re.search(r'\b\d{10,11}\b', text_clean)
+        if phone_match:
+            new_data["user_phone"] = phone_match.group(0)
+            text_clean = text_clean.replace(phone_match.group(0), "")
 
-            # Step 4 — Assign purely by position
-    # Format we asked: Name, Address, Profession, College, Experience
-    if len(parts) >= 1 and not new_data.get("name"):
-        new_data["name"] = parts[0]
-    if len(parts) >= 2 and not new_data.get("address"):
-        new_data["address"] = parts[1]
-    if len(parts) >= 3 and not new_data.get("profession"):
-        new_data["profession"] = parts[2]
-    if len(parts) >= 4 and not new_data.get("college"):
-        new_data["college"] = parts[3]
-    if len(parts) >= 5 and not new_data.get("experience"):
-        new_data["experience"] = parts[4]
+        text_clean = re.sub(r'\s+', ' ', text_clean).strip()
+        text_clean = re.sub(r',\s*,', ',', text_clean)
+        parts = [p.strip() for p in re.split(r'[,\n]', text_clean) if p.strip()]
 
+        if len(parts) >= 1 and not new_data.get("name"):
+            new_data["name"] = parts[0]
+        if len(parts) >= 2 and not new_data.get("address"):
+            new_data["address"] = parts[1]
+        if len(parts) >= 3 and not new_data.get("profession"):
+            new_data["profession"] = parts[2]
+        if len(parts) >= 4 and not new_data.get("college"):
+            new_data["college"] = parts[3]
+        if len(parts) >= 5 and not new_data.get("experience"):
+            new_data["experience"] = parts[4]
 
-    new_data["description"] = text
+        new_data["description"] = text
 
     session_store.update(phone, data=new_data)
 
     has_name    = bool(new_data.get("name"))
-    has_email   = bool(new_data.get("email"))
-    has_address = bool(new_data.get("address"))
+    has_contact = bool(new_data.get("email") or new_data.get("user_phone"))
 
-    if has_name and (has_email or has_address):
+    if has_name and has_contact:
         if session.sub_flow == "workshop":
             await asyncio.to_thread(sheets.log_workshop_lead, {
                 "phone": phone, **new_data,
@@ -223,37 +184,23 @@ async def handle_details_collection(phone: str, text: str):
                 "course_interest": "Architecture & Structure",
             })
 
-        if session.sub_flow == "workshop":
-            await wa.send_buttons(
-                phone,
-                M.confirm_details_received(new_data["name"]),
-                [
-                    {"id": "ask_human",  "label": "📞 Talk to Trainer"},
-                    {"id": "back_main",  "label": "🏠 Main Menu"},
-                ],
-            )
-        else:
-            await wa.send_buttons(
-                phone,
-                M.confirm_details_received(new_data["name"]),
-                [
-                    {"id": "enroll_now", "label": "✅ Enroll Now"},
-                    {"id": "ask_human",  "label": "📞 Talk to Trainer"},
-                ],
-            )
+        await wa.send_buttons(
+            phone,
+            M.confirm_details_received(new_data["name"]),
+            [
+                {"id": "ask_human",  "label": "📞 Talk to Trainer"},
+                {"id": "back_main",  "label": "🏠 Main Menu"},
+            ],
+        )
         session_store.update(phone, stage="post_details")
     else:
         await wa.send_text(
             phone,
             "⚠️ *We could not read your details correctly.*\n\n"
-            "Please share in this exact format:\n\n"
-            "Name, Phone, Email\n\n"
-            "*Example:*\n"
-            "_Rahul Sharma, 9876543210, rahul@gmail.com_\n\n"
+            "Please try submitting the form again, or share your Name, Phone, and Email.\n\n"
             "_Type *Menu* to go back to main menu._"
         )
         
-
 
 # ── STEP 4: Post-details button handling ─────────────────────────────────────
 async def handle_post_details(phone: str, button_id: str, text: str):
@@ -267,6 +214,7 @@ async def handle_post_details(phone: str, button_id: str, text: str):
     if button_id == "curriculum" or "curriculum" in lower:
         session_store.reset(phone)
         return await send_curriculum(phone)
+        
     if button_id == "ask_human" or any(w in lower for w in ["human", "trainer", "call", "talk"]):
         session_store.reset(phone)
         await wa.send_text(phone, M.human_handoff())
@@ -289,10 +237,9 @@ async def handle_post_details(phone: str, button_id: str, text: str):
         phone,
         "Thank you for your message! \n\n"
         "Our team will get back to you.\n\n"
-            "For urgent queries, please contact us at:\n"
+        "For urgent queries, please contact us at:\n"
         "📧 *askus@bimtrainingandprojects.com*"
     )
-
 
 
 # ── Send Brochure ─────────────────────────────────────────────────────────────
@@ -306,12 +253,11 @@ async def send_brochure(phone: str):
             phone,
             pdf_url,
             "BIM_Training_Brochure.pdf",
-            "BIM Training & Projects — Course Brochure\n\nReply ENROLL to register!"
+            "BIM Training & Projects — Course Brochure"
         )
     else:
         await wa.send_text(phone,
-            "📄 Course Brochure:\n\nhttps://www.bimtrainingandprojects.com/bimtraining\n\n"
-            "Reply ENROLL to start enrollment"
+            "📄 Course Brochure:\n\nhttps://www.bimtrainingandprojects.com/bimtraining"
         )
     session_store.update(phone, stage="post_brochure")
 
@@ -322,6 +268,6 @@ async def send_curriculum(phone: str):
         phone,
         "https://www.bimtrainingandprojects.com/_files/ugd/215925_a99fa611909e49ce8860c6b11232e88c.pdf",
         "BIM_Course_Curriculum.pdf",
-        "BIM Training & Projects — Course Curriculum\n\nReply ENROLL to register!"
+        "BIM Training & Projects — Course Curriculum"
     )
     session_store.update(phone, stage="post_brochure")
