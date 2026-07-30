@@ -18,7 +18,7 @@ from app.config.settings import get_settings
 from app.utils.logger import logger
 from app.services import mailer, whatsapp as wa
 from app.flows.message_handler import handle_incoming_message
-from app.jobs.reminders import start_scheduler, schedule_session_reminder, send_seat_filling_alert
+from app.jobs.reminders import start_scheduler, schedule_session_reminder
 
 
 # ── App startup / shutdown ────────────────────────────────────────────────────
