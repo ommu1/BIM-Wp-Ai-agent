@@ -1,3 +1,4 @@
+# Forced update for Railway
 # app/services/sheets.py
 from __future__ import annotations
 
@@ -159,15 +160,14 @@ def log_other_enquiry(data: Dict[str, Any]) -> bool:
     try:
         ws = _get_sheet("Other Enquiry")
         row = [
-            now_str(),
-            data.get("name", ""),
-            data.get("email", ""),
-            data.get("phone", ""),
-            data.get("address", "") or data.get("city", ""),
-            # 👇 Bulletproof checks for Profession and College/Company
-            data.get("profession", "") or data.get("Profession", ""),
-            data.get("college", "") or data.get("company", "") or data.get("College", "") or data.get("College/Company", ""),
-            "New Lead",
+            now_str(),                                          # A: Timestamp
+            data.get("name", ""),                               # B: Name
+            data.get("address", "") or data.get("city", ""),    # C: City/Country
+            data.get("email", ""),                              # D: Email
+            data.get("phone", ""),                              # E: Phone Number
+            data.get("profession", "") or data.get("Profession", ""), # F: Profession
+            data.get("college", "") or data.get("company", "") or data.get("College", "") or data.get("College/Company", ""), # G: College/Company
+            "New Enquiry",                                      # H: Status
         ]
 
         logger.info(f"Other enquiry data | keys={list(data.keys())}")
