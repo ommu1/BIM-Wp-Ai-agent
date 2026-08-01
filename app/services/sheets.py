@@ -132,18 +132,18 @@ def log_project_lead(data: Dict[str, Any]) -> bool:
     try:
         ws = _get_sheet("Project Leads")
         row = [
-            now_str(),
-            data.get("name", ""),
-            data.get("address", "") or data.get("city", ""),
-            data.get("email", ""),
-            data.get("phone", ""),
-            data.get("project_type", "General"),
-            data.get("profession", "") or data.get("Profession", ""),
-            data.get("college", "") or data.get("company", "") or data.get("College", "") or data.get("College/Company", ""),
-            "New Lead"
+            now_str(),                                          # A: Timestamp
+            data.get("name", ""),                               # B: Name
+            data.get("address", "") or data.get("city", ""),    # C: City/Country
+            data.get("email", ""),                              # D: Email
+            data.get("phone", ""),                              # E: Phone Number
+            data.get("project_type", ""),                       # F: Project Type
+            data.get("profession", "") or data.get("Profession", ""), # G: Profession
+            data.get("college", "") or data.get("company", "") or data.get("College/Company", ""), # H: College/Company
+            "New Lead",                                         # I: Status
         ]
 
-        logger.info(f"Project lead data | desc={data.get('description', 'EMPTY')} | keys={list(data.keys())}")
+        logger.info(f"Project lead data | keys={list(data.keys())}")
         ws.append_row(row, value_input_option="USER_ENTERED")
         logger.info(f"Project lead logged | phone={data.get('phone')}")
 
