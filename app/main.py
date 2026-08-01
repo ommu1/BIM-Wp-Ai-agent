@@ -183,15 +183,17 @@ async def process_message(message: dict):
                 "college": college,
             })
                         
-                elif sub_flow in ("Design Projects", "BIM Projects"):  
+                elif sub_flow in ("Design Projects", "BIM Projects"):
+                   
                     await asyncio.to_thread(sheets.log_project_lead, {
-                        "phone": phone,
-                        "name": name,
-                        "email": email,
-                        "address": city,
-                        "description": f"Profession: {profession} | College: {college}",
-                        "project_type": sub_flow,
-                    })
+                     "phone": phone,
+                     "name": name,
+                     "email": email,
+                      "address": city,
+                      "profession": profession,
+                      "college": college,
+                     "project_type": sub_flow,
+            })
                 else:
                     # Default — Architecture & Structure
                     await asyncio.to_thread(sheets.log_training_lead, {
